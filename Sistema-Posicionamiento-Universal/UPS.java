@@ -5,14 +5,8 @@
  */
 package BETA1;
 
-import java.awt.Color;
-import java.awt.Component;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.Image;
-import java.awt.RenderingHints;
-import java.awt.Toolkit;
-import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
@@ -20,18 +14,10 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.imageio.ImageIO;
-import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-import javax.swing.filechooser.FileFilter;
-import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
  *
@@ -49,6 +35,7 @@ public class UPS extends javax.swing.JFrame {
     int CordenadaY[] = {300, 250, 290, 720, 710, 550, 550, 250, 720, 520};
     int CordCont = 0;
     BufferedImage galaxiaModif=null;
+    int agregandoCont=0;
     
     public UPS() {
         this.contenido = new ArrayList<String>();
@@ -66,7 +53,7 @@ public class UPS extends javax.swing.JFrame {
 
         jd_galaxia = new javax.swing.JDialog();
         jl_galaxia = new javax.swing.JLabel();
-        btn_AgregarP = new javax.swing.JButton();
+        btn_AbrirAgregarPla = new javax.swing.JButton();
         btn_modifcarP = new javax.swing.JButton();
         btn_eliminarP = new javax.swing.JButton();
         btn_abrirAgregarCamino = new javax.swing.JButton();
@@ -91,6 +78,13 @@ public class UPS extends javax.swing.JFrame {
         jLabel4 = new javax.swing.JLabel();
         cmb_origen2 = new javax.swing.JComboBox();
         btn_verCaminos1 = new javax.swing.JButton();
+        jLabel5 = new javax.swing.JLabel();
+        jd_agregarPla = new javax.swing.JDialog();
+        jLabel6 = new javax.swing.JLabel();
+        jl_planetaNuevo = new javax.swing.JLabel();
+        jLabel7 = new javax.swing.JLabel();
+        jt_planetaNuevo = new javax.swing.JTextField();
+        jt_terminarAgregarPla = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
         btn_llenarGalaxia = new javax.swing.JButton();
 
@@ -98,10 +92,10 @@ public class UPS extends javax.swing.JFrame {
 
         jl_galaxia.setBackground(javax.swing.UIManager.getDefaults().getColor("CheckBoxMenuItem.acceleratorForeground"));
 
-        btn_AgregarP.setText("Agregar Planeta");
-        btn_AgregarP.addMouseListener(new java.awt.event.MouseAdapter() {
+        btn_AbrirAgregarPla.setText("Agregar Planeta");
+        btn_AbrirAgregarPla.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                btn_AgregarPMouseClicked(evt);
+                btn_AbrirAgregarPlaMouseClicked(evt);
             }
         });
 
@@ -140,17 +134,17 @@ public class UPS extends javax.swing.JFrame {
             .addGroup(jd_galaxiaLayout.createSequentialGroup()
                 .addGap(80, 80, 80)
                 .addComponent(btn_abrirAgregarCamino)
-                .addGap(41, 41, 41)
+                .addGap(18, 18, 18)
                 .addComponent(btn_AbrirModificarCaminos)
-                .addGap(42, 42, 42)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(btn_AbrirEliminarCaminos)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 31, Short.MAX_VALUE)
-                .addComponent(btn_AgregarP)
-                .addGap(30, 30, 30)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(btn_AbrirAgregarPla)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(btn_modifcarP)
-                .addGap(40, 40, 40)
+                .addGap(18, 18, 18)
                 .addComponent(btn_eliminarP)
-                .addGap(114, 114, 114))
+                .addContainerGap(232, Short.MAX_VALUE))
         );
         jd_galaxiaLayout.setVerticalGroup(
             jd_galaxiaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -158,13 +152,13 @@ public class UPS extends javax.swing.JFrame {
                 .addComponent(jl_galaxia, javax.swing.GroupLayout.PREFERRED_SIZE, 638, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addGroup(jd_galaxiaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btn_AgregarP)
+                    .addComponent(btn_AbrirAgregarPla)
                     .addComponent(btn_modifcarP)
                     .addComponent(btn_eliminarP)
                     .addComponent(btn_abrirAgregarCamino)
                     .addComponent(btn_AbrirModificarCaminos)
                     .addComponent(btn_AbrirEliminarCaminos))
-                .addContainerGap(29, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         jLabel2.setText("Agregar Camino Nuevo");
@@ -288,43 +282,95 @@ public class UPS extends javax.swing.JFrame {
             }
         });
 
+        jLabel5.setText("Establesca nueva distancia");
+
         javax.swing.GroupLayout jd_modificarCLayout = new javax.swing.GroupLayout(jd_modificarC.getContentPane());
         jd_modificarC.getContentPane().setLayout(jd_modificarCLayout);
         jd_modificarCLayout.setHorizontalGroup(
             jd_modificarCLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jd_modificarCLayout.createSequentialGroup()
+                .addGap(27, 27, 27)
                 .addGroup(jd_modificarCLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(btn_modificarrCamino, javax.swing.GroupLayout.PREFERRED_SIZE, 138, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jd_modificarCLayout.createSequentialGroup()
-                        .addGap(151, 151, 151)
-                        .addComponent(btn_verCaminos1, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jd_modificarCLayout.createSequentialGroup()
-                        .addGap(163, 163, 163)
+                        .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 141, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
                         .addGroup(jd_modificarCLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(cmb_origen2, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                            .addComponent(sp_distancia2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jd_modificarCLayout.createSequentialGroup()
-                .addGap(0, 15, Short.MAX_VALUE)
-                .addComponent(cmb_destino2, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(36, 36, 36)
-                .addComponent(sp_distancia2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(45, 45, 45)
-                .addComponent(btn_modificarrCamino, javax.swing.GroupLayout.PREFERRED_SIZE, 138, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18))
+            .addGroup(jd_modificarCLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(cmb_origen2, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(btn_verCaminos1, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(cmb_destino2, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(8, 8, 8))
         );
         jd_modificarCLayout.setVerticalGroup(
             jd_modificarCLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jd_modificarCLayout.createSequentialGroup()
                 .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(17, 17, 17)
-                .addComponent(cmb_origen2, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btn_verCaminos1, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(22, 22, 22)
+                .addGroup(jd_modificarCLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(cmb_origen2, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btn_verCaminos1, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(cmb_destino2, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jd_modificarCLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(cmb_destino2, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(sp_distancia2, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btn_modificarrCamino, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(sp_distancia2, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(2, 2, 2)
+                .addComponent(btn_modificarrCamino, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        jLabel6.setText("AGREGAR PLANETA");
+
+        jLabel7.setText("Nombre del planeta");
+
+        jt_terminarAgregarPla.setText("Terminar");
+
+        javax.swing.GroupLayout jd_agregarPlaLayout = new javax.swing.GroupLayout(jd_agregarPla.getContentPane());
+        jd_agregarPla.getContentPane().setLayout(jd_agregarPlaLayout);
+        jd_agregarPlaLayout.setHorizontalGroup(
+            jd_agregarPlaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jd_agregarPlaLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jd_agregarPlaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jd_agregarPlaLayout.createSequentialGroup()
+                        .addComponent(jLabel7)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jt_planetaNuevo, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(26, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jd_agregarPlaLayout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addGroup(jd_agregarPlaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jd_agregarPlaLayout.createSequentialGroup()
+                                .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(61, 61, 61))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jd_agregarPlaLayout.createSequentialGroup()
+                                .addComponent(jl_planetaNuevo, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(55, 55, 55))))))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jd_agregarPlaLayout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jt_terminarAgregarPla)
+                .addGap(77, 77, 77))
+        );
+        jd_agregarPlaLayout.setVerticalGroup(
+            jd_agregarPlaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jd_agregarPlaLayout.createSequentialGroup()
+                .addGap(6, 6, 6)
+                .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jd_agregarPlaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jt_planetaNuevo, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jl_planetaNuevo, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jt_terminarAgregarPla)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -471,9 +517,31 @@ public class UPS extends javax.swing.JFrame {
 
     }//GEN-LAST:event_btn_llenarGalaxiaMouseClicked
 
-    private void btn_AgregarPMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn_AgregarPMouseClicked
-
-    }//GEN-LAST:event_btn_AgregarPMouseClicked
+    private void btn_AbrirAgregarPlaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn_AbrirAgregarPlaMouseClicked
+        if (viaLactea.getInscritos().size()<10) {
+            agregandoCont=viaLactea.getInscritos().size();
+            agregandoCont++;
+            viaLactea.insert(new Planeta(jt_planetaNuevo.getText(),CordenadaX[agregandoCont],CordenadaY[agregandoCont]));
+        
+            
+            Image planetaN = new ImageIcon(getClass().getResource("planeta" + (agregandoCont + 1) + ".png")).getImage();
+            int w = planetaN.getWidth(btn_AbrirAgregarPla);
+            int h = planetaN.getHeight(btn_AbrirAgregarPla);
+            BufferedImage combined = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+        
+            Image dimg = ((BufferedImage) combined);
+            jl_planetaNuevo.setIcon(new ImageIcon(dimg));
+        
+            this.jd_agregarPla.setLocation(1, 1);
+            this.jd_agregarPla.setModal(true);
+            this.jd_agregarPla.pack();
+            this.jd_agregarPla.setVisible(true);
+        }else
+            JOptionPane.showMessageDialog(rootPane, "se ha llegado al maximo de capacidad en la galaxia",
+                    "ERROR", WIDTH, null);
+        
+        
+    }//GEN-LAST:event_btn_AbrirAgregarPlaMouseClicked
 
     private void btn_abrirAgregarCaminoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn_abrirAgregarCaminoMouseClicked
         
@@ -704,22 +772,14 @@ public class UPS extends javax.swing.JFrame {
     private void btn_verCaminos1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn_verCaminos1MouseClicked
         cmb_destino2.removeAllItems();
         String origen = (String) cmb_origen2.getSelectedItem();
-        String dist="";
         
         for (int i = 0; i <viaLactea.getInscritos().size(); i++) {
             if(viaLactea.getInscritos().get(i).getEtiqueta().equals(origen)){
                 for (int j = 0; j < viaLactea.getInscritos().get(i).getAristas().size(); j++) {
-                    dist=viaLactea.getInscritos().get(i).getDist(viaLactea.getInscritos()
-                            .get(i).getAristas().get(j).getAdyacente());
                     cmb_destino2.addItem(viaLactea.getInscritos().get(i).getAristas().get(j).getAdyacente().getEtiqueta());
                 }
             }
         }
-        int distI;
-        for (int i = 0; i < 10; i++) 
-            distI =+dist.charAt(i);
-        
-        sp_distancia2.setValue(dist);
     }//GEN-LAST:event_btn_verCaminos1MouseClicked
 
     /**
@@ -759,9 +819,9 @@ public class UPS extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btn_AbrirAgregarPla;
     private javax.swing.JButton btn_AbrirEliminarCaminos;
     private javax.swing.JButton btn_AbrirModificarCaminos;
-    private javax.swing.JButton btn_AgregarP;
     private javax.swing.JButton btn_abrirAgregarCamino;
     private javax.swing.JButton btn_agregarCaminoNuevo;
     private javax.swing.JButton btn_eliminarCamino;
@@ -781,11 +841,18 @@ public class UPS extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
     private javax.swing.JDialog jd_AgregarC;
+    private javax.swing.JDialog jd_agregarPla;
     private javax.swing.JDialog jd_eliminarC;
     private javax.swing.JDialog jd_galaxia;
     private javax.swing.JDialog jd_modificarC;
     private javax.swing.JLabel jl_galaxia;
+    private javax.swing.JLabel jl_planetaNuevo;
+    private javax.swing.JTextField jt_planetaNuevo;
+    private javax.swing.JButton jt_terminarAgregarPla;
     private javax.swing.JSpinner sp_distancia;
     private javax.swing.JSpinner sp_distancia2;
     // End of variables declaration//GEN-END:variables
