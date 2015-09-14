@@ -5,8 +5,12 @@
  */
 package BETA1;
 
+import java.awt.BasicStroke;
+import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
@@ -31,11 +35,15 @@ public class UPS extends javax.swing.JFrame {
     FileInputStream entrada;
     FileOutputStream salida;
     private ArrayList<String> contenido;
-    int CordenadaX[] = {110, 390, 690, 110, 520, 310, 710, 1010, 1010, 1200};
-    int CordenadaY[] = {300, 250, 290, 720, 710, 550, 550, 250, 720, 520};
+    int CordenadaX[] = {110, 390, 690, 115, 520, 310, 710};
+    int CordenadaY[] = {300, 250, 290, 720, 710, 550, 550};
     int CordCont = 0;
     BufferedImage galaxiaModif = null;
     int agregandoCont = 0;
+    Image galaxiaIm = new ImageIcon(getClass().getResource("galaxia1.jpg")).getImage();
+    Planeta plaOrigen=null;
+    Planeta plaDestino=null;
+        
 
     public UPS() {
         this.contenido = new ArrayList<String>();
@@ -58,6 +66,7 @@ public class UPS extends javax.swing.JFrame {
         btn_abrirAgregarCamino = new javax.swing.JButton();
         btn_AbrirEliminarCaminos = new javax.swing.JButton();
         btn_AbrirModificarCaminos = new javax.swing.JButton();
+        btn_abrirCalculador = new javax.swing.JButton();
         jd_AgregarC = new javax.swing.JDialog();
         cmb_origen = new javax.swing.JComboBox();
         cmb_destino = new javax.swing.JComboBox();
@@ -90,6 +99,17 @@ public class UPS extends javax.swing.JFrame {
         btn_eliminar = new javax.swing.JButton();
         cmb_planetasEliminar = new javax.swing.JComboBox();
         btn_visualizar = new javax.swing.JButton();
+        jd_calculador = new javax.swing.JDialog();
+        jLabel9 = new javax.swing.JLabel();
+        jLabel10 = new javax.swing.JLabel();
+        cmb_origen3 = new javax.swing.JComboBox();
+        btn_selecOrigen = new javax.swing.JButton();
+        jLabel11 = new javax.swing.JLabel();
+        btn_generarInforme = new javax.swing.JButton();
+        cmb_destino3 = new javax.swing.JComboBox();
+        btn_selecDestino = new javax.swing.JButton();
+        btn_generarCamino = new javax.swing.JButton();
+        rd_warp = new javax.swing.JRadioButton();
         jLabel1 = new javax.swing.JLabel();
         btn_llenarGalaxia = new javax.swing.JButton();
 
@@ -132,6 +152,13 @@ public class UPS extends javax.swing.JFrame {
             }
         });
 
+        btn_abrirCalculador.setText("Calculador de Distancias");
+        btn_abrirCalculador.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btn_abrirCalculadorMouseClicked(evt);
+            }
+        });
+
         javax.swing.GroupLayout jd_galaxiaLayout = new javax.swing.GroupLayout(jd_galaxia.getContentPane());
         jd_galaxia.getContentPane().setLayout(jd_galaxiaLayout);
         jd_galaxiaLayout.setHorizontalGroup(
@@ -149,21 +176,29 @@ public class UPS extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(btn_AbrirAgregarPla)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btn_abrirEliminarPla)
-                .addContainerGap(357, Short.MAX_VALUE))
+                .addComponent(btn_abrirEliminarPla, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(31, 31, 31)
+                .addComponent(btn_abrirCalculador, javax.swing.GroupLayout.PREFERRED_SIZE, 207, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(111, Short.MAX_VALUE))
         );
         jd_galaxiaLayout.setVerticalGroup(
             jd_galaxiaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jd_galaxiaLayout.createSequentialGroup()
                 .addComponent(jl_galaxia, javax.swing.GroupLayout.PREFERRED_SIZE, 638, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addGroup(jd_galaxiaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btn_AbrirAgregarPla)
-                    .addComponent(btn_abrirEliminarPla)
-                    .addComponent(btn_abrirAgregarCamino)
-                    .addComponent(btn_AbrirModificarCaminos)
-                    .addComponent(btn_AbrirEliminarCaminos))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(jd_galaxiaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jd_galaxiaLayout.createSequentialGroup()
+                        .addGap(18, 18, 18)
+                        .addGroup(jd_galaxiaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(btn_AbrirAgregarPla)
+                            .addComponent(btn_abrirEliminarPla)
+                            .addComponent(btn_abrirAgregarCamino)
+                            .addComponent(btn_AbrirModificarCaminos)
+                            .addComponent(btn_AbrirEliminarCaminos))
+                        .addContainerGap(22, Short.MAX_VALUE))
+                    .addGroup(jd_galaxiaLayout.createSequentialGroup()
+                        .addGap(10, 10, 10)
+                        .addComponent(btn_abrirCalculador, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addContainerGap())))
         );
 
         jLabel2.setText("Agregar Camino Nuevo");
@@ -295,23 +330,23 @@ public class UPS extends javax.swing.JFrame {
             jd_modificarCLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jd_modificarCLayout.createSequentialGroup()
                 .addGap(27, 27, 27)
+                .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 141, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
                 .addGroup(jd_modificarCLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(btn_modificarrCamino, javax.swing.GroupLayout.PREFERRED_SIZE, 138, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(jd_modificarCLayout.createSequentialGroup()
-                        .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 141, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addGroup(jd_modificarCLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(sp_distancia2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(sp_distancia2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(115, 127, Short.MAX_VALUE))
             .addGroup(jd_modificarCLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(cmb_origen2, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(btn_verCaminos1, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(jd_modificarCLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(btn_modificarrCamino, javax.swing.GroupLayout.PREFERRED_SIZE, 138, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jd_modificarCLayout.createSequentialGroup()
+                        .addComponent(cmb_origen2, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(btn_verCaminos1, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(cmb_destino2, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGap(8, 8, 8))
+                .addContainerGap())
         );
         jd_modificarCLayout.setVerticalGroup(
             jd_modificarCLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -319,16 +354,16 @@ public class UPS extends javax.swing.JFrame {
                 .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(22, 22, 22)
                 .addGroup(jd_modificarCLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(cmb_origen2, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btn_verCaminos1, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(cmb_destino2, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(cmb_destino2, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(cmb_origen2, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jd_modificarCLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(sp_distancia2, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(2, 2, 2)
+                .addGroup(jd_modificarCLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(sp_distancia2, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btn_modificarrCamino, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
 
         jLabel6.setText("AGREGAR PLANETA");
@@ -440,6 +475,111 @@ public class UPS extends javax.swing.JFrame {
                 .addGap(23, 23, 23))
         );
 
+        jLabel9.setText("Calculador de Caminos Mas Cortos");
+
+        jLabel10.setText("Planeta de Partida");
+
+        btn_selecOrigen.setText("Seleccionar");
+        btn_selecOrigen.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btn_selecOrigenMouseClicked(evt);
+            }
+        });
+
+        jLabel11.setText("Planeta Destino");
+
+        btn_generarInforme.setText("Generar Informe");
+        btn_generarInforme.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btn_generarInformeMouseClicked(evt);
+            }
+        });
+
+        btn_selecDestino.setText("Seleccionar");
+        btn_selecDestino.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btn_selecDestinoMouseClicked(evt);
+            }
+        });
+
+        btn_generarCamino.setText("Mostrar Camino");
+        btn_generarCamino.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btn_generarCaminoMouseClicked(evt);
+            }
+        });
+
+        rd_warp.setText("Velocidad WARP");
+
+        javax.swing.GroupLayout jd_calculadorLayout = new javax.swing.GroupLayout(jd_calculador.getContentPane());
+        jd_calculador.getContentPane().setLayout(jd_calculadorLayout);
+        jd_calculadorLayout.setHorizontalGroup(
+            jd_calculadorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jd_calculadorLayout.createSequentialGroup()
+                .addGroup(jd_calculadorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addGroup(jd_calculadorLayout.createSequentialGroup()
+                        .addGap(62, 62, 62)
+                        .addComponent(btn_generarInforme, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jd_calculadorLayout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(rd_warp)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(btn_generarCamino, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(0, 18, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jd_calculadorLayout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 172, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(34, 34, 34))
+            .addGroup(jd_calculadorLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jd_calculadorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jd_calculadorLayout.createSequentialGroup()
+                        .addComponent(btn_selecOrigen)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(jd_calculadorLayout.createSequentialGroup()
+                        .addGroup(jd_calculadorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jd_calculadorLayout.createSequentialGroup()
+                                .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(cmb_destino3, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(jd_calculadorLayout.createSequentialGroup()
+                                .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(cmb_origen3, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(jd_calculadorLayout.createSequentialGroup()
+                        .addComponent(btn_selecDestino)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+        );
+        jd_calculadorLayout.setVerticalGroup(
+            jd_calculadorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jd_calculadorLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jd_calculadorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(cmb_origen3, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btn_selecOrigen)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jd_calculadorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(cmb_destino3, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btn_selecDestino)
+                .addGroup(jd_calculadorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jd_calculadorLayout.createSequentialGroup()
+                        .addGap(19, 19, 19)
+                        .addComponent(btn_generarCamino, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jd_calculadorLayout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(rd_warp)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(btn_generarInforme, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jLabel1.setText("SISTEMA DE POSICIONAMIENTO UNIVERSAL");
@@ -503,11 +643,13 @@ public class UPS extends javax.swing.JFrame {
         BufferedImage combined = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
         String[] tempEntrada;
         int contCord = 0;
+        
         for (int cont = 0; cont < contenido.size(); cont++) {
+            boolean insert1=true;
+            boolean insert2=true;
             Planeta procesando1 = null;
             Planeta procesando2 = null;
             tempEntrada = contenido.get(cont).split("-");
-
             if (viaLactea.getInscritos().isEmpty()) {
                 procesando1 = new Planeta(tempEntrada[0], CordenadaX[contCord], CordenadaY[contCord]);
                 viaLactea.insert(procesando1);
@@ -520,36 +662,74 @@ public class UPS extends javax.swing.JFrame {
 
                 viaLactea.insert(procesando2);
             } else {
+                System.out.println("entro al else de no-empty con :"+cont);
                 if (contCord < CordenadaX.length) {
-                    procesando1 = new Planeta(tempEntrada[0], CordenadaX[contCord], CordenadaY[contCord]);
-                    if (viaLactea.insert(procesando1)) {
+                    System.out.println("entro al if de cordenadas con :"+cont);
+                    for (int i = 0; i < viaLactea.getInscritos().size(); i++) {
+                        if (viaLactea.getInscritos().get(i).getEtiqueta().equals(tempEntrada[0])) {
+                           insert1=false; 
+                            System.out.println("vuelta: "+cont);
+                            System.out.println("NO ingreso "+tempEntrada[0]);
+                        }
+                    }
+                    for (int i = 0; i < viaLactea.getInscritos().size(); i++) {
+                        if (viaLactea.getInscritos().get(i).getEtiqueta().equals(tempEntrada[1])) {
+                           insert2=false; 
+                           System.out.println("vuelta: "+cont);
+                        System.out.println("NO ingreso "+tempEntrada[1]);
+                        }
+                    }
+                    if (insert1) {
+                        System.out.println("vuelta: "+cont);
+                        System.out.println("ingreso "+tempEntrada[0]);
+                        viaLactea.insert(new Planeta(tempEntrada[0],CordenadaX[contCord],CordenadaY[contCord]));
                         contCord++;
                     }
-                    procesando2 = new Planeta(tempEntrada[1], CordenadaX[contCord], CordenadaY[contCord]);
-                    if (viaLactea.insert(procesando2)) {
+                    if (insert2) {
+                        System.out.println("vuelta: "+cont);
+                        System.out.println("ingreso "+tempEntrada[1]);
+                        viaLactea.insert(new Planeta(tempEntrada[1],CordenadaX[contCord],CordenadaY[contCord]));
                         contCord++;
                     }
-                    if (!procesando1.getEtiqueta().equals(procesando2.getEtiqueta())) {
-                        procesando1.insertarAdya(procesando2, tempEntrada[2]);
+                }
+            }
+            for (int i = 0; i < viaLactea.getInscritos().size(); i++) {
+                if (viaLactea.getInscritos().get(i).getEtiqueta().equals(tempEntrada[0])) {
+                    for (int j = 0; j < viaLactea.getInscritos().size(); j++) {
+                        if (viaLactea.getInscritos().get(j).getEtiqueta().equals(tempEntrada[1])) {
+                            viaLactea.getInscritos().get(i).insertarAdya(viaLactea.getInscritos().get(j), tempEntrada[2]);
+                        }
                     }
-
                 }
             }
         }
+        
+        System.out.println("Inscritos en via lactea: ");
+        for (int i = 0; i < viaLactea.getInscritos().size(); i++) {
+            System.out.println(viaLactea.getInscritos().get(i).getEtiqueta()+" "
+                    +viaLactea.getInscritos().get(i).getX());    
+        }
+        for (int i = 0; i < viaLactea.getInscritos().size(); i++) {
+            System.out.println("adyacentes de: "+viaLactea.getInscritos().get(i));
+            for (int j = 0; j < viaLactea.getInscritos().get(i).getAristas().size(); j++) {
+                System.out.println(viaLactea.getInscritos().get(i).getAristas().get(j).getAdyacente().getEtiqueta());
+            }
+
+        }
+        
         Image planetaIm1;
         int cantidadPla = viaLactea.getInscritos().size();
         Graphics g = combined.getGraphics();
         g.drawImage(galaxiaIm, 0, 0, null);
-        
-        for (int i = 0; i < viaLactea.getInscritos().size(); i++)
-            combined=dibujarConexiones(viaLactea.getInscritos().get(i),combined);
-        
-        for (int i = 0; i < cantidadPla; i++) {
-            if (i == viaLactea.getInscritos().size() - 1) {
-                planetaIm1 = new ImageIcon(getClass().getResource("planeta" + 10 + ".jpg")).getImage();
-            } else {
-                planetaIm1 = new ImageIcon(getClass().getResource("planeta" + (i + 1) + ".png")).getImage();
+
+        for (int i = 0; i < viaLactea.getInscritos().size(); i++) {
+            for (int j = 0; j < viaLactea.getInscritos().get(i).getAristas().size(); j++) {
+                dibujarConexiones(viaLactea.getInscritos().get(i).getX(), viaLactea.getInscritos().get(i).getY(), viaLactea.getInscritos().get(i).getAristas().get(j).getAdyacente().getX(), g);
             }
+        }
+
+        for (int i = 0; i < cantidadPla; i++) {
+            planetaIm1 = new ImageIcon(getClass().getResource("planeta" + (i + 1) + ".png")).getImage();
             g.drawImage(planetaIm1, viaLactea.getInscritos().get(i).getX(), viaLactea.getInscritos().get(i).getY(), null);
             g.drawString(viaLactea.getInscritos().get(i).getEtiqueta(), viaLactea.getInscritos().get(i).getX(),
                     viaLactea.getInscritos().get(i).getY() + 115);
@@ -569,14 +749,10 @@ public class UPS extends javax.swing.JFrame {
 
     private void btn_AbrirAgregarPlaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn_AbrirAgregarPlaMouseClicked
 
-        if (viaLactea.getInscritos().size() < 10) {
+        if (viaLactea.getInscritos().size() < 7) {
             Image planetaN = null;
             agregandoCont = viaLactea.getInscritos().size();
-            if (viaLactea.getInscritos().size() == 9) {
-                planetaN = new ImageIcon(getClass().getResource("planeta" + (1 + agregandoCont) + ".jpg")).getImage();
-            } else {
-                planetaN = new ImageIcon(getClass().getResource("planeta" + (agregandoCont + 1) + ".png")).getImage();
-            }
+            planetaN = new ImageIcon(getClass().getResource("planeta" + (agregandoCont + 1) + ".png")).getImage();
             Image dimg = (planetaN);
             jl_planetaNuevo.setIcon(new ImageIcon(dimg));
 
@@ -590,63 +766,1194 @@ public class UPS extends javax.swing.JFrame {
         }
 
     }//GEN-LAST:event_btn_AbrirAgregarPlaMouseClicked
-    //int CordenadaX[] = {110, 390, 690, 115, 520, 310, 710, 1010, 1020, 1200};
-    //int CordenadaY[] = {300, 250, 290, 720, 710, 550, 550, 250, 720, 520};
 
-    public BufferedImage dibujarConexiones(Planeta a,BufferedImage b) {
-        
-        Image galaxiaIm = new ImageIcon(getClass().getResource("galaxia1.jpg")).getImage();
-        int w = galaxiaIm.getWidth(btn_llenarGalaxia);
-        int h = galaxiaIm.getHeight(btn_llenarGalaxia);
-        BufferedImage combined = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
-        combined=b;
-        Image arrowI=null;
-        Graphics g = combined.getGraphics();
-        
-        for (int i = 0; i < viaLactea.getInscritos().size(); i++) {
-            if(!viaLactea.getInscritos().get(i).getAristas().isEmpty()){
-                for (int j = 0; j < viaLactea.getInscritos().get(i).getAristas().size(); j++) {
-                    switch (viaLactea.getInscritos().get(i).getX()) {
-                        case 110:
-                            switch (viaLactea.getInscritos().get(i).getAristas().get(j).getAdyacente().getX()) {
-                                case 390:
-                          
-                                    g.drawImage(galaxiaIm, 0, 0, null);
-                                    arrowI = new ImageIcon(getClass().getResource("arrow1.png")).getImage();
-                                    g.drawImage(arrowI,viaLactea.getInscritos() .get(i).getX()+100
-                                    ,viaLactea.getInscritos().get(i).getY(), 170, 50, rootPane);
-                                              
-                                    break;
-                                case 690:
-                                case 115:
-                                case 520:
-                                case 310:
-                                case 710:
-                                case 1010:
-                                case 1020:
-                                case 1200:
+    public void dibujarConexiones(int x1, int y1, int x2, Graphics g) {
 
-                            }
-                            break;
-                        case 390:
-                        case 690:
-                        case 115:
-                        case 520:
-                        case 310:
-                        case 710:
-                        case 1010:
-                        case 1020:
-                        case 1200:
+        double ang = 0.0, angSep = 0.0;
+        double tx, ty;
+        int dist = 15;
+        Point punto1 = null, punto2 = null;
 
+        switch (x1) {
+            case 110:
+                System.out.println("        x1:110");
+                if (x2 == 390) {
+                    punto1 = new Point(x1, y1+20);
+                    punto2 = new Point(x2, y1+20);
+                    ty = -(punto1.y - punto2.y) * 1.0;
+                    tx = (punto1.x - punto2.x) * 1.0;
+                    ang = Math.atan(ty / tx);
+
+                    if (tx < 0) {
+                        ang += Math.PI;
                     }
+                    Point p1 = new Point(), p2 = new Point(), punto = punto2;
+                    angSep = 25.0;
+
+                    p1.x = (int) (punto.x + dist * Math.cos(ang - Math.toRadians(angSep)));
+                    p1.y = (int) (punto.y - dist * Math.sin(ang - Math.toRadians(angSep)));
+                    p2.x = (int) (punto.x + dist * Math.cos(ang + Math.toRadians(angSep)));
+                    p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
+
+                    Graphics2D g2D = (Graphics2D) g;
+                    g.setColor(Color.yellow);
+                    g2D.setStroke(new BasicStroke(2.2f));
+                    g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
+                    g.drawLine(p1.x, p1.y, punto.x, punto.y);
+                    g.drawLine(p2.x, p2.y, punto.x, punto.y);
+                    System.out.println("    x2: 390");
                 }
+                if (x2 == 690) {
+                    punto1 = new Point(x1+50, y1+50);
+                    punto2 = new Point(x2, y1+50);
+                    ty = -(punto1.y - punto2.y) * 1.0;
+                    tx = (punto1.x - punto2.x) * 1.0;
+                    ang = Math.atan(ty / tx);
+
+                    if (tx < 0) {
+                        ang += Math.PI;
+                    }
+                    Point p1 = new Point(), p2 = new Point(), punto = punto2;
+                    angSep = 25.0;
+
+                    p1.x = (int) (punto.x + dist * Math.cos(ang - Math.toRadians(angSep)));
+                    p1.y = (int) (punto.y - dist * Math.sin(ang - Math.toRadians(angSep)));
+                    p2.x = (int) (punto.x + dist * Math.cos(ang + Math.toRadians(angSep)));
+                    p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
+
+                    Graphics2D g2D = (Graphics2D) g;
+                    g.setColor(Color.yellow);
+                    g2D.setStroke(new BasicStroke(2.2f));
+                    g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
+                    g.drawLine(p1.x, p1.y, punto.x, punto.y);
+                    g.drawLine(p2.x, p2.y, punto.x, punto.y);
+                    System.out.println("    x2: 690");
+                }
+                if (x2 == 115) {
+                    punto1 = new Point(x1+50, y1+100);
+                    punto2 = new Point(x1+50, 720);
+                    ty = -(punto1.y - punto2.y) * 1.0;
+                    tx = (punto1.x - punto2.x) * 1.0;
+                    ang = Math.atan(ty / tx);
+
+                    if (tx < 0) {
+                        ang += Math.PI;
+                    }
+                    Point p1 = new Point(), p2 = new Point(), punto = punto2;
+                    angSep = 25.0;
+
+                    p1.x = (int) (punto.x + dist * Math.cos(ang - Math.toRadians(angSep)));
+                    p1.y = (int) (punto.y - dist * Math.sin(ang - Math.toRadians(angSep)));
+                    p2.x = (int) (punto.x + dist * Math.cos(ang + Math.toRadians(angSep)));
+                    p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
+
+                    Graphics2D g2D = (Graphics2D) g;
+                    g.setColor(Color.yellow);
+                    g2D.setStroke(new BasicStroke(2.2f));
+                    g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
+                    g.drawLine(p1.x, p1.y, punto.x, punto.y);
+                    g.drawLine(p2.x, p2.y, punto.x, punto.y);
+                    System.out.println("    x2: 115");
+                }
+                if (x2 == 520) {
+                    punto1 = new Point(x1, y1);
+                    punto2 = new Point(x2, 710);
+                    ty = -(punto1.y - punto2.y) * 1.0;
+                    tx = (punto1.x - punto2.x) * 1.0;
+                    ang = Math.atan(ty / tx);
+                    if (tx < 0) {
+                        ang += Math.PI;
+                    }
+                    Point p1 = new Point(), p2 = new Point(), punto = punto2;
+                    angSep = 25.0;
+                    p1.x = (int) (punto.x + dist * Math.cos(ang - Math.toRadians(angSep)));
+                    p1.y = (int) (punto.y - dist * Math.sin(ang - Math.toRadians(angSep)));
+                    p2.x = (int) (punto.x + dist * Math.cos(ang + Math.toRadians(angSep)));
+                    p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
+
+                    Graphics2D g2D = (Graphics2D) g;
+                    g.setColor(Color.yellow);
+                    g2D.setStroke(new BasicStroke(2.2f));
+                    g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
+                    g.drawLine(p1.x, p1.y, punto.x, punto.y);
+                    g.drawLine(p2.x, p2.y, punto.x, punto.y);
+                    System.out.println("    x2: 520");
+                }
+                if (x2==310) {
+                    punto1 = new Point(x1+20, y1);
+                    punto2 = new Point(x2, 550);
+                    ty = -(punto1.y - punto2.y) * 1.0;
+                    tx = (punto1.x - punto2.x) * 1.0;
+                    ang = Math.atan(ty / tx);
+
+                    if (tx < 0) {
+                        ang += Math.PI;
+                    }
+                    Point p1 = new Point(), p2 = new Point(), punto = punto2;
+                    angSep = 25.0;
+                    p1.x = (int) (punto.x + dist * Math.cos(ang - Math.toRadians(angSep)));
+                    p1.y = (int) (punto.y - dist * Math.sin(ang - Math.toRadians(angSep)));
+                    p2.x = (int) (punto.x + dist * Math.cos(ang + Math.toRadians(angSep)));
+                    p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
+                    Graphics2D g2D = (Graphics2D) g;
+                    g.setColor(Color.yellow);
+                    g2D.setStroke(new BasicStroke(2.2f));
+                    g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
+                    g.drawLine(p1.x, p1.y, punto.x, punto.y);
+                    g.drawLine(p2.x, p2.y, punto.x, punto.y);
+                    System.out.println("    x2: 310");
+                }
+                if (x2==710) {
+                    punto1 = new Point(x1+20, y1+20);
+                    punto2 = new Point(x2, 550);
+                    ty = -(punto1.y - punto2.y) * 1.0;
+                    tx = (punto1.x - punto2.x) * 1.0;
+                    ang = Math.atan(ty / tx);
+
+                    if (tx < 0) {
+                        ang += Math.PI;
+                    }
+                    Point p1 = new Point(), p2 = new Point(), punto = punto2;
+                    angSep = 25.0;
+
+                    p1.x = (int) (punto.x + dist * Math.cos(ang - Math.toRadians(angSep)));
+                    p1.y = (int) (punto.y - dist * Math.sin(ang - Math.toRadians(angSep)));
+                    p2.x = (int) (punto.x + dist * Math.cos(ang + Math.toRadians(angSep)));
+                    p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
+
+                    Graphics2D g2D = (Graphics2D) g;
+                    g.setColor(Color.yellow);
+                    g2D.setStroke(new BasicStroke(2.2f));
+                    g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
+                    g.drawLine(p1.x, p1.y, punto.x, punto.y);
+                    g.drawLine(p2.x, p2.y, punto.x, punto.y);
+                    System.out.println("    x2: 710");                  
+                }
+                break;
+            case 390:
+                System.out.println("        x1:390");
+//int CordenadaX[] = {110, 390, 690, 115, 520, 310, 710}
+//int CordenadaY[] = {300, 250, 290, 720, 710, 550, 550}
+                if (x2 == 110) {
+                    punto1 = new Point(x1, y1+60);
+                    punto2 = new Point(x2+100, y1+60);
+                    ty = -(punto1.y - punto2.y) * 1.0;
+                    tx = (punto1.x - punto2.x) * 1.0;
+                    ang = Math.atan(ty / tx);
+
+                    if (tx < 0) {
+                        ang += Math.PI;
+                    }
+                    Point p1 = new Point(), p2 = new Point(), punto = punto2;
+                    angSep = 25.0;
+
+                    p1.x = (int) (punto.x + dist * Math.cos(ang - Math.toRadians(angSep)));
+                    p1.y = (int) (punto.y - dist * Math.sin(ang - Math.toRadians(angSep)));
+                    p2.x = (int) (punto.x + dist * Math.cos(ang + Math.toRadians(angSep)));
+                    p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
+
+                    Graphics2D g2D = (Graphics2D) g;
+                    g.setColor(Color.green);
+                    g2D.setStroke(new BasicStroke(2.2f));
+                    g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
+                    g.drawLine(p1.x, p1.y, punto.x, punto.y);
+                    g.drawLine(p2.x, p2.y, punto.x, punto.y);
+                    System.out.println("    x2:110");
+                }
+                if (x2 == 690) {
+                    punto1 = new Point(x1+50, y1+50);
+                    punto2 = new Point(x2, y1+50);
+                    ty = -(punto1.y - punto2.y) * 1.0;
+                    tx = (punto1.x - punto2.x) * 1.0;
+                    ang = Math.atan(ty / tx);
+
+                    if (tx < 0) {
+                        ang += Math.PI;
+                    }
+                    Point p1 = new Point(), p2 = new Point(), punto = punto2;
+                    angSep = 25.0;
+
+                    p1.x = (int) (punto.x + dist * Math.cos(ang - Math.toRadians(angSep)));
+                    p1.y = (int) (punto.y - dist * Math.sin(ang - Math.toRadians(angSep)));
+                    p2.x = (int) (punto.x + dist * Math.cos(ang + Math.toRadians(angSep)));
+                    p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
+
+                    Graphics2D g2D = (Graphics2D) g;
+                    g.setColor(Color.green);
+                    g2D.setStroke(new BasicStroke(2.2f));
+                    g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
+                    g.drawLine(p1.x, p1.y, punto.x, punto.y);
+                    g.drawLine(p2.x, p2.y, punto.x, punto.y);
+                    System.out.println("    x2:690");
+                }
+                if (x2 == 115) {
+                    punto1 = new Point(x1+50, y1);
+                    punto2 = new Point(x2+90, 720);
+                    ty = -(punto1.y - punto2.y) * 1.0;
+                    tx = (punto1.x - punto2.x) * 1.0;
+                    ang = Math.atan(ty / tx);
+
+                    if (tx < 0) {
+                        ang += Math.PI;
+                    }
+                    Point p1 = new Point(), p2 = new Point(), punto = punto2;
+                    angSep = 25.0;
+
+                    p1.x = (int) (punto.x + dist * Math.cos(ang - Math.toRadians(angSep)));
+                    p1.y = (int) (punto.y - dist * Math.sin(ang - Math.toRadians(angSep)));
+                    p2.x = (int) (punto.x + dist * Math.cos(ang + Math.toRadians(angSep)));
+                    p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
+
+                    Graphics2D g2D = (Graphics2D) g;
+                    g.setColor(Color.green);
+                    g2D.setStroke(new BasicStroke(2.2f));
+                    g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
+                    g.drawLine(p1.x, p1.y, punto.x, punto.y);
+                    g.drawLine(p2.x, p2.y, punto.x, punto.y);
+                    System.out.println("    x2:115");
+                }
+                if (x2 == 520) {
+                    punto1 = new Point(x1+50, y1+5);
+                    punto2 = new Point(x2+50, 710);
+                    ty = -(punto1.y - punto2.y) * 1.0;
+                    tx = (punto1.x - punto2.x) * 1.0;
+                    ang = Math.atan(ty / tx);
+
+                    if (tx < 0) {
+                        ang += Math.PI;
+                    }
+                    Point p1 = new Point(), p2 = new Point(), punto = punto2;
+                    angSep = 25.0;
+
+                    p1.x = (int) (punto.x + dist * Math.cos(ang - Math.toRadians(angSep)));
+                    p1.y = (int) (punto.y - dist * Math.sin(ang - Math.toRadians(angSep)));
+                    p2.x = (int) (punto.x + dist * Math.cos(ang + Math.toRadians(angSep)));
+                    p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
+
+                    Graphics2D g2D = (Graphics2D) g;
+                    g.setColor(Color.green);
+                    g2D.setStroke(new BasicStroke(2.2f));
+                    g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
+                    g.drawLine(p1.x, p1.y, punto.x, punto.y);
+                    g.drawLine(p2.x, p2.y, punto.x, punto.y);
+                    System.out.println("    x2:520");
+                }
+                if (x2==310) {
+                    punto1 = new Point(x1+50, y1+50);
+                    punto2 = new Point(x2+50, 550);
+                    ty = -(punto1.y - punto2.y) * 1.0;
+                    tx = (punto1.x - punto2.x) * 1.0;
+                    ang = Math.atan(ty / tx);
+
+                    if (tx < 0) {
+                        ang += Math.PI;
+                    }
+                    Point p1 = new Point(), p2 = new Point(), punto = punto2;
+                    angSep = 25.0;
+
+                    p1.x = (int) (punto.x + dist * Math.cos(ang - Math.toRadians(angSep)));
+                    p1.y = (int) (punto.y - dist * Math.sin(ang - Math.toRadians(angSep)));
+                    p2.x = (int) (punto.x + dist * Math.cos(ang + Math.toRadians(angSep)));
+                    p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
+
+                    Graphics2D g2D = (Graphics2D) g;
+                    g.setColor(Color.green);
+                    g2D.setStroke(new BasicStroke(2.2f));
+                    g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
+                    g.drawLine(p1.x, p1.y, punto.x, punto.y);
+                    g.drawLine(p2.x, p2.y, punto.x, punto.y);
+                    System.out.println("    x2:310");
+                }
+                if (x2==710) {
+                    punto1 = new Point(x1+20, y1+20);
+                    punto2 = new Point(x2, 550);
+                    ty = -(punto1.y - punto2.y) * 1.0;
+                    tx = (punto1.x - punto2.x) * 1.0;
+                    ang = Math.atan(ty / tx);
+
+                    if (tx < 0) {
+                        ang += Math.PI;
+                    }
+                    Point p1 = new Point(), p2 = new Point(), punto = punto2;
+                    angSep = 25.0;
+
+                    p1.x = (int) (punto.x + dist * Math.cos(ang - Math.toRadians(angSep)));
+                    p1.y = (int) (punto.y - dist * Math.sin(ang - Math.toRadians(angSep)));
+                    p2.x = (int) (punto.x + dist * Math.cos(ang + Math.toRadians(angSep)));
+                    p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
+
+                    Graphics2D g2D = (Graphics2D) g;
+                    g.setColor(Color.green);
+                    g2D.setStroke(new BasicStroke(2.2f));
+                    g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
+                    g.drawLine(p1.x, p1.y, punto.x, punto.y);
+                    g.drawLine(p2.x, p2.y, punto.x, punto.y);
+                    System.out.println("    x2:710");
+                }
+                break;
+            case 690:
+                System.out.println("        x1:690");
+//int CordenadaX[] = {110, 390, 690, 115, 520, 310, 710}
+//int CordenadaY[] = {300, 250, 290, 720, 710, 550, 550}
+                if (x2 == 110) {
+                    punto1 = new Point(x1, y1+60);
+                    punto2 = new Point(x2+100, y1+60);
+                    ty = -(punto1.y - punto2.y) * 1.0;
+                    tx = (punto1.x - punto2.x) * 1.0;
+                    ang = Math.atan(ty / tx);
+
+                    if (tx < 0) {
+                        ang += Math.PI;
+                    }
+                    Point p1 = new Point(), p2 = new Point(), punto = punto2;
+                    angSep = 25.0;
+
+                    p1.x = (int) (punto.x + dist * Math.cos(ang - Math.toRadians(angSep)));
+                    p1.y = (int) (punto.y - dist * Math.sin(ang - Math.toRadians(angSep)));
+                    p2.x = (int) (punto.x + dist * Math.cos(ang + Math.toRadians(angSep)));
+                    p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
+
+                    Graphics2D g2D = (Graphics2D) g;
+                    g.setColor(Color.green);
+                    g2D.setStroke(new BasicStroke(2.2f));
+                    g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
+                    g.drawLine(p1.x, p1.y, punto.x, punto.y);
+                    g.drawLine(p2.x, p2.y, punto.x, punto.y);
+                    System.out.println("    x2:110");
+                }
+                if (x2 == 390) {
+                    punto1 = new Point(x1+50, y1+40);
+                    punto2 = new Point(x2+100, y1+40);
+                    ty = -(punto1.y - punto2.y) * 1.0;
+                    tx = (punto1.x - punto2.x) * 1.0;
+                    ang = Math.atan(ty / tx);
+
+                    if (tx < 0) {
+                        ang += Math.PI;
+                    }
+                    Point p1 = new Point(), p2 = new Point(), punto = punto2;
+                    angSep = 25.0;
+
+                    p1.x = (int) (punto.x + dist * Math.cos(ang - Math.toRadians(angSep)));
+                    p1.y = (int) (punto.y - dist * Math.sin(ang - Math.toRadians(angSep)));
+                    p2.x = (int) (punto.x + dist * Math.cos(ang + Math.toRadians(angSep)));
+                    p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
+
+                    Graphics2D g2D = (Graphics2D) g;
+                    g.setColor(Color.green);
+                    g2D.setStroke(new BasicStroke(2.2f));
+                    g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
+                    g.drawLine(p1.x, p1.y, punto.x, punto.y);
+                    g.drawLine(p2.x, p2.y, punto.x, punto.y);
+                    
+                    System.out.println("    x2:390");
+                }
+                if (x2 == 115) {
+                    punto1 = new Point(x1+50, y1);
+                    punto2 = new Point(x2+90, 720);
+                    ty = -(punto1.y - punto2.y) * 1.0;
+                    tx = (punto1.x - punto2.x) * 1.0;
+                    ang = Math.atan(ty / tx);
+
+                    if (tx < 0) {
+                        ang += Math.PI;
+                    }
+                    Point p1 = new Point(), p2 = new Point(), punto = punto2;
+                    angSep = 25.0;
+
+                    p1.x = (int) (punto.x + dist * Math.cos(ang - Math.toRadians(angSep)));
+                    p1.y = (int) (punto.y - dist * Math.sin(ang - Math.toRadians(angSep)));
+                    p2.x = (int) (punto.x + dist * Math.cos(ang + Math.toRadians(angSep)));
+                    p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
+
+                    Graphics2D g2D = (Graphics2D) g;
+                    g.setColor(Color.green);
+                    g2D.setStroke(new BasicStroke(2.2f));
+                    g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
+                    g.drawLine(p1.x, p1.y, punto.x, punto.y);
+                    g.drawLine(p2.x, p2.y, punto.x, punto.y);
+
+                    System.out.println("    x2:115");
+                }
+                if (x2 == 520) {
+                    punto1 = new Point(x1+50, y1+5);
+                    punto2 = new Point(x2+50, 710);
+                    ty = -(punto1.y - punto2.y) * 1.0;
+                    tx = (punto1.x - punto2.x) * 1.0;
+                    ang = Math.atan(ty / tx);
+
+                    if (tx < 0) {
+                        ang += Math.PI;
+                    }
+                    Point p1 = new Point(), p2 = new Point(), punto = punto2;
+                    angSep = 25.0;
+
+                    p1.x = (int) (punto.x + dist * Math.cos(ang - Math.toRadians(angSep)));
+                    p1.y = (int) (punto.y - dist * Math.sin(ang - Math.toRadians(angSep)));
+                    p2.x = (int) (punto.x + dist * Math.cos(ang + Math.toRadians(angSep)));
+                    p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
+
+                    Graphics2D g2D = (Graphics2D) g;
+                    g.setColor(Color.green);
+                    g2D.setStroke(new BasicStroke(2.2f));
+                    g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
+                    g.drawLine(p1.x, p1.y, punto.x, punto.y);
+                    g.drawLine(p2.x, p2.y, punto.x, punto.y);
+                    System.out.println("    x2:520");
+                }
+                if (x2==310) {
+                    punto1 = new Point(x1+50, y1+50);
+                    punto2 = new Point(x2+130, 545);
+                    ty = -(punto1.y - punto2.y) * 1.0;
+                    tx = (punto1.x - punto2.x) * 1.0;
+                    ang = Math.atan(ty / tx);
+
+                    if (tx < 0) {
+                        ang += Math.PI;
+                    }
+                    Point p1 = new Point(), p2 = new Point(), punto = punto2;
+                    angSep = 25.0;
+
+                    p1.x = (int) (punto.x + dist * Math.cos(ang - Math.toRadians(angSep)));
+                    p1.y = (int) (punto.y - dist * Math.sin(ang - Math.toRadians(angSep)));
+                    p2.x = (int) (punto.x + dist * Math.cos(ang + Math.toRadians(angSep)));
+                    p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
+
+                    Graphics2D g2D = (Graphics2D) g;
+                    g.setColor(Color.green);
+                    g2D.setStroke(new BasicStroke(2.2f));
+                    g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
+                    g.drawLine(p1.x, p1.y, punto.x, punto.y);
+                    g.drawLine(p2.x, p2.y, punto.x, punto.y);
+                    System.out.println("    x2:310");
+                }
+                if (x2==710) {
+                    punto1 = new Point(x1+40, y1+20);
+                    punto2 = new Point(x2+20, 550);
+                    ty = -(punto1.y - punto2.y) * 1.0;
+                    tx = (punto1.x - punto2.x) * 1.0;
+                    ang = Math.atan(ty / tx);
+
+                    if (tx < 0) {
+                        ang += Math.PI;
+                    }
+                    Point p1 = new Point(), p2 = new Point(), punto = punto2;
+                    angSep = 25.0;
+
+                    p1.x = (int) (punto.x + dist * Math.cos(ang - Math.toRadians(angSep)));
+                    p1.y = (int) (punto.y - dist * Math.sin(ang - Math.toRadians(angSep)));
+                    p2.x = (int) (punto.x + dist * Math.cos(ang + Math.toRadians(angSep)));
+                    p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
+
+                    Graphics2D g2D = (Graphics2D) g;
+                    g.setColor(Color.green);
+                    g2D.setStroke(new BasicStroke(2.2f));
+                    g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
+                    g.drawLine(p1.x, p1.y, punto.x, punto.y);
+                    g.drawLine(p2.x, p2.y, punto.x, punto.y);
+                    System.out.println("    x2:710");
+                }
+                break;
+            case 115:
+                System.out.println("        x1:115");
+//int CordenadaX[] = {110, 390, 690, 115, 520, 310, 710}
+//int CordenadaY[] = {300, 250, 290, 720, 710, 550, 550}
+                if (x2 == 110) {
+                    punto1 = new Point(x1+50, y1+20);
+                    punto2 = new Point(x2+70, 400);
+                    ty = -(punto1.y - punto2.y) * 1.0;
+                    tx = (punto1.x - punto2.x) * 1.0;
+                    ang = Math.atan(ty / tx);
+
+                    if (tx < 0) {
+                        ang += Math.PI;
+                    }
+                    Point p1 = new Point(), p2 = new Point(), punto = punto2;
+                    angSep = 25.0;
+
+                    p1.x = (int) (punto.x + dist * Math.cos(ang - Math.toRadians(angSep)));
+                    p1.y = (int) (punto.y - dist * Math.sin(ang - Math.toRadians(angSep)));
+                    p2.x = (int) (punto.x + dist * Math.cos(ang + Math.toRadians(angSep)));
+                    p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
+
+                    Graphics2D g2D = (Graphics2D) g;
+                    g.setColor(Color.magenta);
+                    g2D.setStroke(new BasicStroke(2.2f));
+                    g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
+                    g.drawLine(p1.x, p1.y, punto.x, punto.y);
+                    g.drawLine(p2.x, p2.y, punto.x, punto.y);
+                    System.out.println("    x2:110");
+                }
+                //int CordenadaX[] = {110, 390, 690, 115, 520, 310, 710, 970, 1020, 1200};
+                //int CordenadaY[] = {300, 250, 290, 720, 710, 550, 550, 250, 720, 520};
+                if (x2 == 390) {
+                    punto1 = new Point(x1+50, y1+50);
+                    punto2 = new Point(x2, 350);
+                    ty = -(punto1.y - punto2.y) * 1.0;
+                    tx = (punto1.x - punto2.x) * 1.0;
+                    ang = Math.atan(ty / tx);
+
+                    if (tx < 0) {
+                        ang += Math.PI;
+                    }
+                    Point p1 = new Point(), p2 = new Point(), punto = punto2;
+                    angSep = 25.0;
+
+                    p1.x = (int) (punto.x + dist * Math.cos(ang - Math.toRadians(angSep)));
+                    p1.y = (int) (punto.y - dist * Math.sin(ang - Math.toRadians(angSep)));
+                    p2.x = (int) (punto.x + dist * Math.cos(ang + Math.toRadians(angSep)));
+                    p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
+
+                    Graphics2D g2D = (Graphics2D) g;
+                    g.setColor(Color.magenta);
+                    g2D.setStroke(new BasicStroke(2.2f));
+                    g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
+                    g.drawLine(p1.x, p1.y, punto.x, punto.y);
+                    g.drawLine(p2.x, p2.y, punto.x, punto.y);
+                    
+                    System.out.println("    x2:390");
+                }
+                //int CordenadaX[] = {110, 390, 690, 115, 520, 310, 710, 970, 1020, 1200};
+                //int CordenadaY[] = {300, 250, 290, 720, 710, 550, 550, 250, 720, 520};
+                if (x2 == 690) {
+                    punto1 = new Point(x1+50, y1+50);
+                    punto2 = new Point(x2, 390);
+                    ty = -(punto1.y - punto2.y) * 1.0;
+                    tx = (punto1.x - punto2.x) * 1.0;
+                    ang = Math.atan(ty / tx);
+
+                    if (tx < 0) {
+                        ang += Math.PI;
+                    }
+                    Point p1 = new Point(), p2 = new Point(), punto = punto2;
+                    angSep = 25.0;
+
+                    p1.x = (int) (punto.x + dist * Math.cos(ang - Math.toRadians(angSep)));
+                    p1.y = (int) (punto.y - dist * Math.sin(ang - Math.toRadians(angSep)));
+                    p2.x = (int) (punto.x + dist * Math.cos(ang + Math.toRadians(angSep)));
+                    p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
+
+                    Graphics2D g2D = (Graphics2D) g;
+                    g.setColor(Color.magenta);
+                    g2D.setStroke(new BasicStroke(2.2f));
+                    g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
+                    g.drawLine(p1.x, p1.y, punto.x, punto.y);
+                    g.drawLine(p2.x, p2.y, punto.x, punto.y);
+
+                    System.out.println("    x2:690");
+                }
+                //int CordenadaX[] = {110, 390, 690, 115, 520, 310, 710, 970, 1020, 1200};
+                //int CordenadaY[] = {300, 250, 290, 720, 710, 550, 550, 250, 720, 520};
+                if (x2 == 520) {
+                    punto1 = new Point(x1+100, y1+30);
+                    punto2 = new Point(x2, y1+30);
+                    ty = -(punto1.y - punto2.y) * 1.0;
+                    tx = (punto1.x - punto2.x) * 1.0;
+                    ang = Math.atan(ty / tx);
+
+                    if (tx < 0) {
+                        ang += Math.PI;
+                    }
+                    Point p1 = new Point(), p2 = new Point(), punto = punto2;
+                    angSep = 25.0;
+
+                    p1.x = (int) (punto.x + dist * Math.cos(ang - Math.toRadians(angSep)));
+                    p1.y = (int) (punto.y - dist * Math.sin(ang - Math.toRadians(angSep)));
+                    p2.x = (int) (punto.x + dist * Math.cos(ang + Math.toRadians(angSep)));
+                    p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
+
+                    Graphics2D g2D = (Graphics2D) g;
+                    g.setColor(Color.magenta);
+                    g2D.setStroke(new BasicStroke(2.2f));
+                    g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
+                    g.drawLine(p1.x, p1.y, punto.x, punto.y);
+                    g.drawLine(p2.x, p2.y, punto.x, punto.y);
+                    System.out.println("    x2:520");
+                }
+                //int CordenadaX[] = {110, 390, 690, 115, 520, 310, 710, 970, 1020, 1200};
+                //int CordenadaY[] = {300, 250, 290, 720, 710, 550, 550, 250, 720, 520};
+                if (x2==310) {
+                    punto1 = new Point(x1+50, y1);
+                    punto2 = new Point(x2, 570);
+                    ty = -(punto1.y - punto2.y) * 1.0;
+                    tx = (punto1.x - punto2.x) * 1.0;
+                    ang = Math.atan(ty / tx);
+
+                    if (tx < 0) {
+                        ang += Math.PI;
+                    }
+                    Point p1 = new Point(), p2 = new Point(), punto = punto2;
+                    angSep = 25.0;
+
+                    p1.x = (int) (punto.x + dist * Math.cos(ang - Math.toRadians(angSep)));
+                    p1.y = (int) (punto.y - dist * Math.sin(ang - Math.toRadians(angSep)));
+                    p2.x = (int) (punto.x + dist * Math.cos(ang + Math.toRadians(angSep)));
+                    p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
+
+                    Graphics2D g2D = (Graphics2D) g;
+                    g.setColor(Color.magenta);
+                    g2D.setStroke(new BasicStroke(2.2f));
+                    g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
+                    g.drawLine(p1.x, p1.y, punto.x, punto.y);
+                    g.drawLine(p2.x, p2.y, punto.x, punto.y);
+                    System.out.println("    x2:310");
+                }
+                //int CordenadaX[] = {110, 390, 690, 115, 520, 310, 710, 970, 1020, 1200};
+                //int CordenadaY[] = {300, 250, 290, 720, 710, 550, 550, 250, 720, 520};
+                if (x2==710) {
+                    punto1 = new Point(x1+100, y1+40);
+                    punto2 = new Point(x2, 550+50);
+                    ty = -(punto1.y - punto2.y) * 1.0;
+                    tx = (punto1.x - punto2.x) * 1.0;
+                    ang = Math.atan(ty / tx);
+
+                    if (tx < 0) {
+                        ang += Math.PI;
+                    }
+                    Point p1 = new Point(), p2 = new Point(), punto = punto2;
+                    angSep = 25.0;
+
+                    p1.x = (int) (punto.x + dist * Math.cos(ang - Math.toRadians(angSep)));
+                    p1.y = (int) (punto.y - dist * Math.sin(ang - Math.toRadians(angSep)));
+                    p2.x = (int) (punto.x + dist * Math.cos(ang + Math.toRadians(angSep)));
+                    p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
+
+                    Graphics2D g2D = (Graphics2D) g;
+                    g.setColor(Color.magenta);
+                    g2D.setStroke(new BasicStroke(2.2f));
+                    g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
+                    g.drawLine(p1.x, p1.y, punto.x, punto.y);
+                    g.drawLine(p2.x, p2.y, punto.x, punto.y);
+                    System.out.println("    x2:710");
+                }
+                break;
+            case 520:
+                System.out.println("        x1:520");
+                //int CordenadaX[] = {110, 390, 690, 115, 520, 310, 710, 970, 1020, 1200};
+                //int CordenadaY[] = {300, 250, 290, 720, 710, 550, 550, 250, 720, 520};
+                if (x2 == 110) {
+                    System.out.println("    x2:110");
+                    punto1 = new Point(x1, y1);
+                    punto2 = new Point(x2+100, 400);
+                    ty = -(punto1.y - punto2.y) * 1.0;
+                    tx = (punto1.x - punto2.x) * 1.0;
+                    ang = Math.atan(ty / tx);
+
+                    if (tx < 0) {
+                        ang += Math.PI;
+                    }
+                    Point p1 = new Point(), p2 = new Point(), punto = punto2;
+                    angSep = 25.0;
+
+                    p1.x = (int) (punto.x + dist * Math.cos(ang - Math.toRadians(angSep)));
+                    p1.y = (int) (punto.y - dist * Math.sin(ang - Math.toRadians(angSep)));
+                    p2.x = (int) (punto.x + dist * Math.cos(ang + Math.toRadians(angSep)));
+                    p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
+
+                    Graphics2D g2D = (Graphics2D) g;
+                    g.setColor(Color.white);
+                    g2D.setStroke(new BasicStroke(2.2f));
+                    g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
+                    g.drawLine(p1.x, p1.y, punto.x, punto.y);
+                    g.drawLine(p2.x, p2.y, punto.x, punto.y);
+                }
+                //int CordenadaX[] = {110, 390, 690, 115, 520, 310, 710, 970, 1020, 1200};
+                //int CordenadaY[] = {300, 250, 290, 720, 710, 550, 550, 250, 720, 520};
+                if (x2 == 390) {
+                    System.out.println("    x2:390");
+                    punto1 = new Point(x1, y1);
+                    punto2 = new Point(x2+80, 350);
+                    ty = -(punto1.y - punto2.y) * 1.0;
+                    tx = (punto1.x - punto2.x) * 1.0;
+                    ang = Math.atan(ty / tx);
+
+                    if (tx < 0) {
+                        ang += Math.PI;
+                    }
+                    Point p1 = new Point(), p2 = new Point(), punto = punto2;
+                    angSep = 25.0;
+
+                    p1.x = (int) (punto.x + dist * Math.cos(ang - Math.toRadians(angSep)));
+                    p1.y = (int) (punto.y - dist * Math.sin(ang - Math.toRadians(angSep)));
+                    p2.x = (int) (punto.x + dist * Math.cos(ang + Math.toRadians(angSep)));
+                    p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
+
+                    Graphics2D g2D = (Graphics2D) g;
+                    g.setColor(Color.white);
+                    g2D.setStroke(new BasicStroke(2.2f));
+                    g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
+                    g.drawLine(p1.x, p1.y, punto.x, punto.y);
+                    g.drawLine(p2.x, p2.y, punto.x, punto.y);
+                    
+                }
+                //int CordenadaX[] = {110, 390, 690, 115, 520, 310, 710, 970, 1020, 1200};
+                //int CordenadaY[] = {300, 250, 290, 720, 710, 550, 550, 250, 720, 520};
+                if (x2 == 690) {
+                    System.out.println("    x2:690");
+                    punto1 = new Point(x1+100, y1);
+                    punto2 = new Point(x2+20, 390);
+                    ty = -(punto1.y - punto2.y) * 1.0;
+                    tx = (punto1.x - punto2.x) * 1.0;
+                    ang = Math.atan(ty / tx);
+
+                    if (tx < 0) {
+                        ang += Math.PI;
+                    }
+                    Point p1 = new Point(), p2 = new Point(), punto = punto2;
+                    angSep = 25.0;
+
+                    p1.x = (int) (punto.x + dist * Math.cos(ang - Math.toRadians(angSep)));
+                    p1.y = (int) (punto.y - dist * Math.sin(ang - Math.toRadians(angSep)));
+                    p2.x = (int) (punto.x + dist * Math.cos(ang + Math.toRadians(angSep)));
+                    p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
+
+                    Graphics2D g2D = (Graphics2D) g;
+                    g.setColor(Color.white);
+                    g2D.setStroke(new BasicStroke(2.2f));
+                    g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
+                    g.drawLine(p1.x, p1.y, punto.x, punto.y);
+                    g.drawLine(p2.x, p2.y, punto.x, punto.y);
+
+                }
+                //int CordenadaX[] = {110, 390, 690, 115, 520, 310, 710, 970, 1020, 1200};
+                //int CordenadaY[] = {300, 250, 290, 720, 710, 550, 550, 250, 720, 520};                
+                if (x2 == 115) {
+                    System.out.println("    x2:115");
+                    punto1 = new Point(x1, y1+50);
+                    punto2 = new Point(x2+100, y1+50);
+                    ty = -(punto1.y - punto2.y) * 1.0;
+                    tx = (punto1.x - punto2.x) * 1.0;
+                    ang = Math.atan(ty / tx);
+
+                    if (tx < 0) {
+                        ang += Math.PI;
+                    }
+                    Point p1 = new Point(), p2 = new Point(), punto = punto2;
+                    angSep = 25.0;
+
+                    p1.x = (int) (punto.x + dist * Math.cos(ang - Math.toRadians(angSep)));
+                    p1.y = (int) (punto.y - dist * Math.sin(ang - Math.toRadians(angSep)));
+                    p2.x = (int) (punto.x + dist * Math.cos(ang + Math.toRadians(angSep)));
+                    p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
+
+                    Graphics2D g2D = (Graphics2D) g;
+                    g.setColor(Color.white);
+                    g2D.setStroke(new BasicStroke(2.2f));
+                    g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
+                    g.drawLine(p1.x, p1.y, punto.x, punto.y);
+                    g.drawLine(p2.x, p2.y, punto.x, punto.y);
+                    
+                }
+                //int CordenadaX[] = {110, 390, 690, 115, 520, 310, 710, 970, 1020, 1200};
+                //int CordenadaY[] = {300, 250, 290, 720, 710, 550, 550, 250, 720, 520};                                
+                if (x2==310) {
+                    System.out.println("    x2:310");
+                    punto1 = new Point(x1+15, y1);
+                    punto2 = new Point(x2+100, 650);
+                    ty = -(punto1.y - punto2.y) * 1.0;
+                    tx = (punto1.x - punto2.x) * 1.0;
+                    ang = Math.atan(ty / tx);
+
+                    if (tx < 0) {
+                        ang += Math.PI;
+                    }
+                    Point p1 = new Point(), p2 = new Point(), punto = punto2;
+                    angSep = 25.0;
+
+                    p1.x = (int) (punto.x + dist * Math.cos(ang - Math.toRadians(angSep)));
+                    p1.y = (int) (punto.y - dist * Math.sin(ang - Math.toRadians(angSep)));
+                    p2.x = (int) (punto.x + dist * Math.cos(ang + Math.toRadians(angSep)));
+                    p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
+
+                    Graphics2D g2D = (Graphics2D) g;
+                    g.setColor(Color.white);
+                    g2D.setStroke(new BasicStroke(2.2f));
+                    g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
+                    g.drawLine(p1.x, p1.y, punto.x, punto.y);
+                    g.drawLine(p2.x, p2.y, punto.x, punto.y);
+                    
+                }
+                //int CordenadaX[] = {110, 390, 690, 115, 520, 310, 710}
+                //int CordenadaY[] = {300, 250, 290, 720, 710, 550, 550}
+                if (x2==710) {
+                    System.out.println("    x2:710");
+                    punto1 = new Point(x1+90, y1);
+                    punto2 = new Point(x2, 650);
+                    ty = -(punto1.y - punto2.y) * 1.0;
+                    tx = (punto1.x - punto2.x) * 1.0;
+                    ang = Math.atan(ty / tx);
+
+                    if (tx < 0) {
+                        ang += Math.PI;
+                    }
+                    Point p1 = new Point(), p2 = new Point(), punto = punto2;
+                    angSep = 25.0;
+
+                    p1.x = (int) (punto.x + dist * Math.cos(ang - Math.toRadians(angSep)));
+                    p1.y = (int) (punto.y - dist * Math.sin(ang - Math.toRadians(angSep)));
+                    p2.x = (int) (punto.x + dist * Math.cos(ang + Math.toRadians(angSep)));
+                    p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
+
+                    Graphics2D g2D = (Graphics2D) g;
+                    g.setColor(Color.white);
+                    g2D.setStroke(new BasicStroke(2.2f));
+                    g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
+                    g.drawLine(p1.x, p1.y, punto.x, punto.y);
+                    g.drawLine(p2.x, p2.y, punto.x, punto.y);
+                    System.out.println("entro al 710");                    
+                }
+                break;
+            case 310:
+//int CordenadaX[] = {110, 390, 690, 115, 520, 310, 710}
+//int CordenadaY[] = {300, 250, 290, 720, 710, 550, 550}
+                System.out.println("        x1:310");
+                if (x2 == 110) {
+                    System.out.println("    x2:110");
+                    punto1 = new Point(x1, y1);
+                    punto2 = new Point(x2+90,400);
+                    ty = -(punto1.y - punto2.y) * 1.0;
+                    tx = (punto1.x - punto2.x) * 1.0;
+                    ang = Math.atan(ty / tx);
+
+                    if (tx < 0) {
+                        ang += Math.PI;
+                    }
+                    Point p1 = new Point(), p2 = new Point(), punto = punto2;
+                    angSep = 25.0;
+
+                    p1.x = (int) (punto.x + dist * Math.cos(ang - Math.toRadians(angSep)));
+                    p1.y = (int) (punto.y - dist * Math.sin(ang - Math.toRadians(angSep)));
+                    p2.x = (int) (punto.x + dist * Math.cos(ang + Math.toRadians(angSep)));
+                    p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
+
+                    Graphics2D g2D = (Graphics2D) g;
+                    g.setColor(Color.orange);
+                    g2D.setStroke(new BasicStroke(2.2f));
+                    g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
+                    g.drawLine(p1.x, p1.y, punto.x, punto.y);
+                    g.drawLine(p2.x, p2.y, punto.x, punto.y);
+                }
+                //int CordenadaX[] = {110, 390, 690, 115, 520, 310, 710}
+                //int CordenadaY[] = {300, 250, 290, 720, 710, 550, 550}
+                if (x2 == 390) {
+                    System.out.println("    x2:390");
+                    punto1 = new Point(x1+50, y1);
+                    punto2 = new Point(x2+90, 350);
+                    ty = -(punto1.y - punto2.y) * 1.0;
+                    tx = (punto1.x - punto2.x) * 1.0;
+                    ang = Math.atan(ty / tx);
+
+                    if (tx < 0) {
+                        ang += Math.PI;
+                    }
+                    Point p1 = new Point(), p2 = new Point(), punto = punto2;
+                    angSep = 25.0;
+
+                    p1.x = (int) (punto.x + dist * Math.cos(ang - Math.toRadians(angSep)));
+                    p1.y = (int) (punto.y - dist * Math.sin(ang - Math.toRadians(angSep)));
+                    p2.x = (int) (punto.x + dist * Math.cos(ang + Math.toRadians(angSep)));
+                    p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
+
+                    Graphics2D g2D = (Graphics2D) g;
+                    g.setColor(Color.orange);
+                    g2D.setStroke(new BasicStroke(2.2f));
+                    g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
+                    g.drawLine(p1.x, p1.y, punto.x, punto.y);
+                    g.drawLine(p2.x, p2.y, punto.x, punto.y);
+                    
+                }
+                //int CordenadaX[] = {110, 390, 690, 115, 520, 310, 710}
+                //int CordenadaY[] = {300, 250, 290, 720, 710, 550, 550}                
+                if (x2 == 690) {
+                    System.out.println("    x2:690");
+                    punto1 = new Point(x1+110, y1);
+                    punto2 = new Point(x2, 380);
+                    ty = -(punto1.y - punto2.y) * 1.0;
+                    tx = (punto1.x - punto2.x) * 1.0;
+                    ang = Math.atan(ty / tx);
+
+                    if (tx < 0) {
+                        ang += Math.PI;
+                    }
+                    Point p1 = new Point(), p2 = new Point(), punto = punto2;
+                    angSep = 25.0;
+
+                    p1.x = (int) (punto.x + dist * Math.cos(ang - Math.toRadians(angSep)));
+                    p1.y = (int) (punto.y - dist * Math.sin(ang - Math.toRadians(angSep)));
+                    p2.x = (int) (punto.x + dist * Math.cos(ang + Math.toRadians(angSep)));
+                    p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
+
+                    Graphics2D g2D = (Graphics2D) g;
+                    g.setColor(Color.orange);
+                    g2D.setStroke(new BasicStroke(2.2f));
+                    g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
+                    g.drawLine(p1.x, p1.y, punto.x, punto.y);
+                    g.drawLine(p2.x, p2.y, punto.x, punto.y);
+
+                }
+                //int CordenadaX[] = {110, 390, 690, 115, 520, 310, 710}
+                //int CordenadaY[] = {300, 250, 290, 720, 710, 550, 550}                                
+                if (x2 == 115) {
+                    System.out.println("    x2:115");
+                    punto1 = new Point(x1, y1+50);
+                    punto2 = new Point(x2+70, 710);
+                    ty = -(punto1.y - punto2.y) * 1.0;
+                    tx = (punto1.x - punto2.x) * 1.0;
+                    ang = Math.atan(ty / tx);
+
+                    if (tx < 0) {
+                        ang += Math.PI;
+                    }
+                    Point p1 = new Point(), p2 = new Point(), punto = punto2;
+                    angSep = 25.0;
+
+                    p1.x = (int) (punto.x + dist * Math.cos(ang - Math.toRadians(angSep)));
+                    p1.y = (int) (punto.y - dist * Math.sin(ang - Math.toRadians(angSep)));
+                    p2.x = (int) (punto.x + dist * Math.cos(ang + Math.toRadians(angSep)));
+                    p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
+
+                    Graphics2D g2D = (Graphics2D) g;
+                    g.setColor(Color.orange);
+                    g2D.setStroke(new BasicStroke(2.2f));
+                    g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
+                    g.drawLine(p1.x, p1.y, punto.x, punto.y);
+                    g.drawLine(p2.x, p2.y, punto.x, punto.y);
+
+                }
+                //int CordenadaX[] = {110, 390, 690, 115, 520, 310, 710}
+                //int CordenadaY[] = {300, 250, 290, 720, 710, 550, 550}                                                
+                if (x2==520) {
+                    System.out.println("    x2:520");
+                    punto1 = new Point(x1+100, y1+100);
+                    punto2 = new Point(x2, 710);
+                    ty = -(punto1.y - punto2.y) * 1.0;
+                    tx = (punto1.x - punto2.x) * 1.0;
+                    ang = Math.atan(ty / tx);
+
+                    if (tx < 0) {
+                        ang += Math.PI;
+                    }
+                    Point p1 = new Point(), p2 = new Point(), punto = punto2;
+                    angSep = 25.0;
+
+                    p1.x = (int) (punto.x + dist * Math.cos(ang - Math.toRadians(angSep)));
+                    p1.y = (int) (punto.y - dist * Math.sin(ang - Math.toRadians(angSep)));
+                    p2.x = (int) (punto.x + dist * Math.cos(ang + Math.toRadians(angSep)));
+                    p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
+
+                    Graphics2D g2D = (Graphics2D) g;
+                    g.setColor(Color.orange);
+                    g2D.setStroke(new BasicStroke(2.2f));
+                    g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
+                    g.drawLine(p1.x, p1.y, punto.x, punto.y);
+                    g.drawLine(p2.x, p2.y, punto.x, punto.y);
+                }
+                //int CordenadaX[] = {110, 390, 690, 115, 520, 310, 710}
+                //int CordenadaY[] = {300, 250, 290, 720, 710, 550, 550}                                                
+                if (x2==710) {
+                    System.out.println("    x2:710");
+                    punto1 = new Point(x1+100, y1+50);
+                    punto2 = new Point(x2, y1+50);
+                    ty = -(punto1.y - punto2.y) * 1.0;
+                    tx = (punto1.x - punto2.x) * 1.0;
+                    ang = Math.atan(ty / tx);
+
+                    if (tx < 0) {
+                        ang += Math.PI;
+                    }
+                    Point p1 = new Point(), p2 = new Point(), punto = punto2;
+                    angSep = 25.0;
+
+                    p1.x = (int) (punto.x + dist * Math.cos(ang - Math.toRadians(angSep)));
+                    p1.y = (int) (punto.y - dist * Math.sin(ang - Math.toRadians(angSep)));
+                    p2.x = (int) (punto.x + dist * Math.cos(ang + Math.toRadians(angSep)));
+                    p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
+
+                    Graphics2D g2D = (Graphics2D) g;
+                    g.setColor(Color.orange);
+                    g2D.setStroke(new BasicStroke(2.2f));
+                    g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
+                    g.drawLine(p1.x, p1.y, punto.x, punto.y);
+                    g.drawLine(p2.x, p2.y, punto.x, punto.y);
+                }
+                break;
+            case 710:
+                    //int CordenadaX[] = {110, 390, 690, 115, 520, 310, 710}
+                    //int CordenadaY[] = {300, 250, 290, 720, 710, 550, 550}
+                System.out.println("        x1:710");
+                if (x2 == 110) {
+                    System.out.println("    x2:110");
+                    punto1 = new Point(x1, y1);
+                    punto2 = new Point(x2+100, 400);
+                    ty = -(punto1.y - punto2.y) * 1.0;
+                    tx = (punto1.x - punto2.x) * 1.0;
+                    ang = Math.atan(ty / tx);
+
+                    if (tx < 0) {
+                        ang += Math.PI;
+                    }
+                    Point p1 = new Point(), p2 = new Point(), punto = punto2;
+                    angSep = 25.0;
+
+                    p1.x = (int) (punto.x + dist * Math.cos(ang - Math.toRadians(angSep)));
+                    p1.y = (int) (punto.y - dist * Math.sin(ang - Math.toRadians(angSep)));
+                    p2.x = (int) (punto.x + dist * Math.cos(ang + Math.toRadians(angSep)));
+                    p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
+
+                    Graphics2D g2D = (Graphics2D) g;
+                    g.setColor(Color.blue);
+                    g2D.setStroke(new BasicStroke(2.2f));
+                    g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
+                    g.drawLine(p1.x, p1.y, punto.x, punto.y);
+                    g.drawLine(p2.x, p2.y, punto.x, punto.y);
+                }
+                if (x2 == 390) {
+                    //int CordenadaX[] = {110, 390, 690, 115, 520, 310, 710}
+                    //int CordenadaY[] = {300, 250, 290, 720, 710, 550, 550}
+                    System.out.println("    x2:390");
+                    punto1 = new Point(x1+10, y1);
+                    punto2 = new Point(x2+90, 350);
+                    ty = -(punto1.y - punto2.y) * 1.0;
+                    tx = (punto1.x - punto2.x) * 1.0;
+                    ang = Math.atan(ty / tx);
+
+                    if (tx < 0) {
+                        ang += Math.PI;
+                    }
+                    Point p1 = new Point(), p2 = new Point(), punto = punto2;
+                    angSep = 25.0;
+
+                    p1.x = (int) (punto.x + dist * Math.cos(ang - Math.toRadians(angSep)));
+                    p1.y = (int) (punto.y - dist * Math.sin(ang - Math.toRadians(angSep)));
+                    p2.x = (int) (punto.x + dist * Math.cos(ang + Math.toRadians(angSep)));
+                    p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
+
+                    Graphics2D g2D = (Graphics2D) g;
+                    g.setColor(Color.blue);
+                    g2D.setStroke(new BasicStroke(2.2f));
+                    g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
+                    g.drawLine(p1.x, p1.y, punto.x, punto.y);
+                    g.drawLine(p2.x, p2.y, punto.x, punto.y);
+                    
+                }
+                if (x2 == 690) {
+                    //int CordenadaX[] = {110, 390, 690, 115, 520, 310, 710}
+                    //int CordenadaY[] = {300, 250, 290, 720, 710, 550, 550}
+                    System.out.println("    x2:690");
+                    punto1 = new Point(x1+50, y1);
+                    punto2 = new Point(x1+50, 390);
+                    ty = -(punto1.y - punto2.y) * 1.0;
+                    tx = (punto1.x - punto2.x) * 1.0;
+                    ang = Math.atan(ty / tx);
+
+                    if (tx < 0) {
+                        ang += Math.PI;
+                    }
+                    Point p1 = new Point(), p2 = new Point(), punto = punto2;
+                    angSep = 25.0;
+
+                    p1.x = (int) (punto.x + dist * Math.cos(ang - Math.toRadians(angSep)));
+                    p1.y = (int) (punto.y - dist * Math.sin(ang - Math.toRadians(angSep)));
+                    p2.x = (int) (punto.x + dist * Math.cos(ang + Math.toRadians(angSep)));
+                    p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
+
+                    Graphics2D g2D = (Graphics2D) g;
+                    g.setColor(Color.blue);
+                    g2D.setStroke(new BasicStroke(2.2f));
+                    g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
+                    g.drawLine(p1.x, p1.y, punto.x, punto.y);
+                    g.drawLine(p2.x, p2.y, punto.x, punto.y);
+                }
+                
+                if (x2 == 115) {
+                    //int CordenadaX[] = {110, 390, 690, 115, 520, 310, 710}
+                    //int CordenadaY[] = {300, 250, 290, 720, 710, 550, 550}
+                    System.out.println("    x2:115");                    
+                    punto1 = new Point(x1, y1+90);
+                    punto2 = new Point(x2+100, 740);
+                    ty = -(punto1.y - punto2.y) * 1.0;
+                    tx = (punto1.x - punto2.x) * 1.0;
+                    ang = Math.atan(ty / tx);
+
+                    if (tx < 0) {
+                        ang += Math.PI;
+                    }
+                    Point p1 = new Point(), p2 = new Point(), punto = punto2;
+                    angSep = 25.0;
+
+                    p1.x = (int) (punto.x + dist * Math.cos(ang - Math.toRadians(angSep)));
+                    p1.y = (int) (punto.y - dist * Math.sin(ang - Math.toRadians(angSep)));
+                    p2.x = (int) (punto.x + dist * Math.cos(ang + Math.toRadians(angSep)));
+                    p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
+
+                    Graphics2D g2D = (Graphics2D) g;
+                    g.setColor(Color.blue);
+                    g2D.setStroke(new BasicStroke(2.2f));
+                    g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
+                    g.drawLine(p1.x, p1.y, punto.x, punto.y);
+                    g.drawLine(p2.x, p2.y, punto.x, punto.y);
+                }
+                if (x2==520) {
+                    //int CordenadaX[] = {110, 390, 690, 115, 520, 310, 710}
+                    //int CordenadaY[] = {300, 250, 290, 720, 710, 550, 550}
+                    System.out.println("    x2:520");
+                    punto1 = new Point(x1+50, y1+100);
+                    punto2 = new Point(x2+100, 760);
+                    ty = -(punto1.y - punto2.y) * 1.0;
+                    tx = (punto1.x - punto2.x) * 1.0;
+                    ang = Math.atan(ty / tx);
+
+                    if (tx < 0) {
+                        ang += Math.PI;
+                    }
+                    Point p1 = new Point(), p2 = new Point(), punto = punto2;
+                    angSep = 25.0;
+
+                    p1.x = (int) (punto.x + dist * Math.cos(ang - Math.toRadians(angSep)));
+                    p1.y = (int) (punto.y - dist * Math.sin(ang - Math.toRadians(angSep)));
+                    p2.x = (int) (punto.x + dist * Math.cos(ang + Math.toRadians(angSep)));
+                    p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
+
+                    Graphics2D g2D = (Graphics2D) g;
+                    g.setColor(Color.blue);
+                    g2D.setStroke(new BasicStroke(2.2f));
+                    g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
+                    g.drawLine(p1.x, p1.y, punto.x, punto.y);
+                    g.drawLine(p2.x, p2.y, punto.x, punto.y);
+                }
+                
+                if (x2==310) {
+                    //int CordenadaX[] = {110, 390, 690, 115, 520, 310, 710}
+                    //int CordenadaY[] = {300, 250, 290, 720, 710, 550, 550}
+                    System.out.println("    x2:310");
+                    punto1 = new Point(x1+20, y1+50);
+                    punto2 = new Point(x2+100, y1+50);
+                    ty = -(punto1.y - punto2.y) * 1.0;
+                    tx = (punto1.x - punto2.x) * 1.0;
+                    ang = Math.atan(ty / tx);
+
+                    if (tx < 0) {
+                        ang += Math.PI;
+                    }
+                    Point p1 = new Point(), p2 = new Point(), punto = punto2;
+                    angSep = 25.0;
+
+                    p1.x = (int) (punto.x + dist * Math.cos(ang - Math.toRadians(angSep)));
+                    p1.y = (int) (punto.y - dist * Math.sin(ang - Math.toRadians(angSep)));
+                    p2.x = (int) (punto.x + dist * Math.cos(ang + Math.toRadians(angSep)));
+                    p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
+
+                    Graphics2D g2D = (Graphics2D) g;
+                    g.setColor(Color.blue);
+                    g2D.setStroke(new BasicStroke(2.2f));
+                    g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
+                    g.drawLine(p1.x, p1.y, punto.x, punto.y);
+                    g.drawLine(p2.x, p2.y, punto.x, punto.y);
+                }
+                break;
             }
         }
-        return combined;
-        //Image dimg = ((BufferedImage) galaxiaModif);
-        //jl_galaxia.setIcon(new ImageIcon(dimg));
-    }
-    
+
     private void btn_abrirAgregarCaminoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn_abrirAgregarCaminoMouseClicked
 
         for (int i = 0; i < viaLactea.getInscritos().size(); i++) {
@@ -680,7 +1987,9 @@ public class UPS extends javax.swing.JFrame {
         destino = (String) cmb_destino.getSelectedItem();
         int distI = (int) sp_distancia.getValue();
         String dist = distI + "";
-
+        Image planetaIm1;
+        int cantidadPla = viaLactea.getInscritos().size();
+        
         for (int i = 0; i < viaLactea.getInscritos().size(); i++) {
             for (int j = 0; j < viaLactea.getInscritos().size(); j++) {
                 if (viaLactea.getInscritos().get(i).getEtiqueta().equals(origen)
@@ -689,19 +1998,22 @@ public class UPS extends javax.swing.JFrame {
                 }
             }
         }
-        //DIBUJAR LINEA
-        if (!viaLactea.getInscritos().isEmpty()) {
-            for (int i = 0; i < viaLactea.getInscritos().size(); i++) {
-                if (!viaLactea.getInscritos().get(i).getAristas().isEmpty()) {
-                    for (int j = 0; j < viaLactea.getInscritos().get(i).getAristas().size(); j++) {
-                        Graphics g = galaxiaModif.getGraphics();
-                        g.drawLine(viaLactea.getInscritos().get(i).getX() + 50, viaLactea.getInscritos().get(i).getY(), viaLactea.getInscritos().get(i).getAristas().get(j).getAdyacente().getX() + 50, viaLactea.getInscritos().get(i).getAristas().get(j).getAdyacente().getY());
-
-                    }
-                }
+        Graphics g = galaxiaModif.getGraphics();
+        g.drawImage(galaxiaIm, 0, 0, null);
+        
+        for (int i = 0; i < viaLactea.getInscritos().size(); i++) {
+            for (int j = 0; j < viaLactea.getInscritos().get(i).getAristas().size(); j++) {
+                dibujarConexiones(viaLactea.getInscritos().get(i).getX(), 
+                        viaLactea.getInscritos().get(i).getY(), 
+                        viaLactea.getInscritos().get(i).getAristas().get(j).getAdyacente().getX(), g);
             }
         }
-
+        for (int i = 0; i < cantidadPla; i++) {
+            planetaIm1 = new ImageIcon(getClass().getResource("planeta" + (i + 1) + ".png")).getImage();
+            g.drawImage(planetaIm1, viaLactea.getInscritos().get(i).getX(), viaLactea.getInscritos().get(i).getY(), null);
+            g.drawString(viaLactea.getInscritos().get(i).getEtiqueta(), viaLactea.getInscritos().get(i).getX(),
+                    viaLactea.getInscritos().get(i).getY() + 115);
+        }
         Image dimg = ((BufferedImage) galaxiaModif);
         jl_galaxia.setIcon(new ImageIcon(dimg));
 
@@ -709,18 +2021,15 @@ public class UPS extends javax.swing.JFrame {
         cmb_origen.removeAllItems();
         jd_AgregarC.dispose();
 
-        this.jd_galaxia.setLocation(1, 1);
-        this.jd_galaxia.setModal(true);
-        this.jd_galaxia.pack();
-        this.jd_galaxia.setVisible(true);
-
 
     }//GEN-LAST:event_btn_agregarCaminoNuevoMouseClicked
 
     private void btn_eliminarCaminoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn_eliminarCaminoMouseClicked
         String destino = (String) cmb_destino1.getSelectedItem();
         String origen = (String) cmb_origen1.getSelectedItem();
-
+        Image planetaIm1;
+        int cantidadPla = viaLactea.getInscritos().size();
+    
         for (int i = 0; i < viaLactea.getInscritos().size(); i++) {
             for (int j = 0; j < viaLactea.getInscritos().get(i).getAristas().size(); j++) {
                 cmb_destino1.addItem(viaLactea.getInscritos().get(i).getEtiqueta());
@@ -737,49 +2046,27 @@ public class UPS extends javax.swing.JFrame {
                 }
             }
         }
-
-        //dibujar
-        //galaxia vacia
-        Image galaxiaIm = new ImageIcon(getClass().getResource("galaxia1.jpg")).getImage();
-        int w = galaxiaIm.getWidth(btn_llenarGalaxia);
-        int h = galaxiaIm.getHeight(btn_llenarGalaxia);
-        galaxiaModif = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
         Graphics g = galaxiaModif.getGraphics();
-
-        //planetas
-        Image planetaIm1;
-        int cantidadPla = viaLactea.getInscritos().size();
         g.drawImage(galaxiaIm, 0, 0, null);
-
-        for (int i = 0; i < cantidadPla; i++) {
-            if (i == viaLactea.getInscritos().size() - 1) {
-                planetaIm1 = new ImageIcon(getClass().getResource("planeta" + 10 + ".jpg")).getImage();
-            } else {
-                planetaIm1 = new ImageIcon(getClass().getResource("planeta" + (i + 1) + ".png")).getImage();
+        
+        for (int i = 0; i < viaLactea.getInscritos().size(); i++) {
+            for (int j = 0; j < viaLactea.getInscritos().get(i).getAristas().size(); j++) {
+                dibujarConexiones(viaLactea.getInscritos().get(i).getX(), 
+                        viaLactea.getInscritos().get(i).getY(), 
+                        viaLactea.getInscritos().get(i).getAristas().get(j).getAdyacente().getX(), g);
             }
-            System.out.println("i: " + (1 + i));
+        }
+        for (int i = 0; i < cantidadPla; i++) {
+            planetaIm1 = new ImageIcon(getClass().getResource("planeta" + (i + 1) + ".png")).getImage();
             g.drawImage(planetaIm1, viaLactea.getInscritos().get(i).getX(), viaLactea.getInscritos().get(i).getY(), null);
-            g.drawString(i + viaLactea.getInscritos().get(i).getEtiqueta(), viaLactea.getInscritos().get(i).getX(),
+            g.drawString(viaLactea.getInscritos().get(i).getEtiqueta(), viaLactea.getInscritos().get(i).getX(),
                     viaLactea.getInscritos().get(i).getY() + 115);
         }
-
-        //linas
-        if (!viaLactea.getInscritos().isEmpty()) {
-            for (int i = 0; i < viaLactea.getInscritos().size(); i++) {
-                if (!viaLactea.getInscritos().get(i).getAristas().isEmpty()) {
-                    for (int j = 0; j < viaLactea.getInscritos().get(i).getAristas().size(); j++) {
-                        g.drawLine(viaLactea.getInscritos().get(i).getX() + 50, viaLactea.getInscritos()
-                                .get(i).getY(), viaLactea.getInscritos().get(i).getAristas().get(j)
-                                .getAdyacente().getX() + 50, viaLactea.getInscritos().get(i).getAristas()
-                                .get(j).getAdyacente().getY());
-                    }
-                }
-            }
-        }
-
+        
         Image dimg = ((BufferedImage) galaxiaModif);
         jl_galaxia.setIcon(new ImageIcon(dimg));
-
+        
+        cmb_origen1.removeAllItems();
         cmb_destino1.removeAllItems();
         this.jd_eliminarC.dispose();
 
@@ -815,7 +2102,9 @@ public class UPS extends javax.swing.JFrame {
     private void btn_modificarrCaminoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn_modificarrCaminoMouseClicked
         String destino = (String) cmb_destino2.getSelectedItem();
         String origen = (String) cmb_origen2.getSelectedItem();
-
+        Image planetaIm1;
+        int cantidadPla = viaLactea.getInscritos().size();
+    
         //eliminar
         for (int i = 0; i < viaLactea.getInscritos().size(); i++) {
             for (int j = 0; j < viaLactea.getInscritos().get(i).getAristas().size(); j++) {
@@ -845,19 +2134,23 @@ public class UPS extends javax.swing.JFrame {
             }
         }
 
-        //dibujar
-        if (!viaLactea.getInscritos().isEmpty()) {
-            for (int i = 0; i < viaLactea.getInscritos().size(); i++) {
-                if (!viaLactea.getInscritos().get(i).getAristas().isEmpty()) {
-                    for (int j = 0; j < viaLactea.getInscritos().get(i).getAristas().size(); j++) {
-                        Graphics g = galaxiaModif.getGraphics();
-                        g.drawLine(viaLactea.getInscritos().get(i).getX() + 50, viaLactea.getInscritos().get(i).getY(), viaLactea.getInscritos().get(i).getAristas().get(j).getAdyacente().getX() + 50, viaLactea.getInscritos().get(i).getAristas().get(j).getAdyacente().getY());
-
-                    }
-                }
+        Graphics g = galaxiaModif.getGraphics();
+        g.drawImage(galaxiaIm, 0, 0, null);
+        
+        for (int i = 0; i < viaLactea.getInscritos().size(); i++) {
+            for (int j = 0; j < viaLactea.getInscritos().get(i).getAristas().size(); j++) {
+                dibujarConexiones(viaLactea.getInscritos().get(i).getX(), 
+                        viaLactea.getInscritos().get(i).getY(), 
+                        viaLactea.getInscritos().get(i).getAristas().get(j).getAdyacente().getX(), g);
             }
         }
-
+        for (int i = 0; i < cantidadPla; i++) {
+            planetaIm1 = new ImageIcon(getClass().getResource("planeta" + (i + 1) + ".png")).getImage();
+            g.drawImage(planetaIm1, viaLactea.getInscritos().get(i).getX(), viaLactea.getInscritos().get(i).getY(), null);
+            g.drawString(viaLactea.getInscritos().get(i).getEtiqueta(), viaLactea.getInscritos().get(i).getX(),
+                    viaLactea.getInscritos().get(i).getY() + 115);
+        }
+        
         Image dimg = ((BufferedImage) galaxiaModif);
         jl_galaxia.setIcon(new ImageIcon(dimg));
 
@@ -881,43 +2174,46 @@ public class UPS extends javax.swing.JFrame {
     }//GEN-LAST:event_btn_verCaminos1MouseClicked
 
     private void jt_terminarAgregarPlaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jt_terminarAgregarPlaMouseClicked
-
-        Image galaxiaIm = new ImageIcon(getClass().getResource("galaxia1.jpg")).getImage();
-        int w = galaxiaIm.getWidth(btn_llenarGalaxia);
-        int h = galaxiaIm.getHeight(btn_llenarGalaxia);
-        galaxiaModif = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
-
-        agregandoCont = viaLactea.getInscritos().size();
-        viaLactea.insert(new Planeta(jt_planetaNuevo.getText(), CordenadaX[agregandoCont], CordenadaY[agregandoCont]));
-        agregandoCont++;
-
         Image planetaIm1;
+        boolean disponible=true;
+        int cordDisponible=0;
+        CordCont = viaLactea.getInscritos().size();
+        for (int i = 0; i < CordenadaX.length; i++) {
+            for (int j = 0; j < viaLactea.getInscritos().size(); j++) {
+                if (CordenadaX[i]==viaLactea.getInscritos().get(j).getX()){
+                    disponible=false;
+                }
+                if (disponible) {
+                    cordDisponible=i;
+                }
+            }
+        }
+        viaLactea.insert(new Planeta(jt_planetaNuevo.getText(), CordenadaX[cordDisponible], CordenadaY[cordDisponible]));
+        CordCont++;
         int cantidadPla = viaLactea.getInscritos().size();
+        
+        
         Graphics g = galaxiaModif.getGraphics();
         g.drawImage(galaxiaIm, 0, 0, null);
-
-        for (int i = 0; i < cantidadPla; i++) {
-            if (i == 9) {
-                planetaIm1 = new ImageIcon(getClass().getResource("planeta" + 10 + ".jpg")).getImage();
-            } else {
-                planetaIm1 = new ImageIcon(getClass().getResource("planeta" + (1 + i) + ".png")).getImage();
+        
+        for (int i = 0; i < viaLactea.getInscritos().size(); i++) {
+            for (int j = 0; j < viaLactea.getInscritos().get(i).getAristas().size(); j++) {
+                dibujarConexiones(viaLactea.getInscritos().get(i).getX(), 
+                        viaLactea.getInscritos().get(i).getY(), 
+                        viaLactea.getInscritos().get(i).getAristas().get(j).getAdyacente().getX(), g);
             }
+        }
+        for (int i = 0; i < cantidadPla; i++) {
+            planetaIm1 = new ImageIcon(getClass().getResource("planeta" + (i + 1) + ".png")).getImage();
             g.drawImage(planetaIm1, viaLactea.getInscritos().get(i).getX(), viaLactea.getInscritos().get(i).getY(), null);
             g.drawString(viaLactea.getInscritos().get(i).getEtiqueta(), viaLactea.getInscritos().get(i).getX(),
                     viaLactea.getInscritos().get(i).getY() + 115);
         }
-        if (!viaLactea.getInscritos().isEmpty()) {
-            for (int i = 0; i < viaLactea.getInscritos().size(); i++) {
-
-                if (!viaLactea.getInscritos().get(i).getAristas().isEmpty()) {
-                    for (int j = 0; j < viaLactea.getInscritos().get(i).getAristas().size(); j++) {
-                        g.drawLine(viaLactea.getInscritos().get(i).getX() + 50, viaLactea.getInscritos().get(i).getY(), viaLactea.getInscritos().get(i).getAristas().get(j).getAdyacente().getX() + 50, viaLactea.getInscritos().get(i).getAristas().get(j).getAdyacente().getY());
-                    }
-                }
-            }
-        }
+        
         Image dimg = ((BufferedImage) galaxiaModif);
         jl_galaxia.setIcon(new ImageIcon(dimg));
+
+
         jt_planetaNuevo.setText("");
         jd_agregarPla.dispose();
 
@@ -965,47 +2261,142 @@ public class UPS extends javax.swing.JFrame {
 
     private void btn_eliminarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn_eliminarMouseClicked
         String eliminar;
+        Image planetaIm1;
         eliminar = (String) cmb_planetasEliminar.getSelectedItem();
+        
         for (int i = 0; i < viaLactea.getInscritos().size(); i++) {
             if (viaLactea.getInscritos().get(i).getEtiqueta().equals(eliminar)) {
                 viaLactea.getInscritos().remove(i);
+                CordCont--;
             }
         }
-        Image galaxiaIm = new ImageIcon(getClass().getResource("galaxia1.jpg")).getImage();
-        int w = galaxiaIm.getWidth(btn_llenarGalaxia);
-        int h = galaxiaIm.getHeight(btn_llenarGalaxia);
-        galaxiaModif = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
-
-        Image planetaIm1;
+        for (int i = 0; i < viaLactea.getInscritos().size(); i++) {
+            for (int j = 0; j < viaLactea.getInscritos().get(i).getAristas().size(); j++) {
+                if (viaLactea.getInscritos().get(i).getAristas().get(j).getAdyacente().getEtiqueta().equals(eliminar)) {
+                    viaLactea.getInscritos().get(i).getAristas().remove(j);
+                }
+            }
+        }
         int cantidadPla = viaLactea.getInscritos().size();
         Graphics g = galaxiaModif.getGraphics();
         g.drawImage(galaxiaIm, 0, 0, null);
-
-        for (int i = 0; i < cantidadPla; i++) {
-            if (i == 9) {
-                planetaIm1 = new ImageIcon(getClass().getResource("planeta" + 10 + ".jpg")).getImage();
-            } else {
-                planetaIm1 = new ImageIcon(getClass().getResource("planeta" + (1 + i) + ".png")).getImage();
+        
+        for (int i = 0; i < viaLactea.getInscritos().size(); i++) {
+            for (int j = 0; j < viaLactea.getInscritos().get(i).getAristas().size(); j++) {
+                dibujarConexiones(viaLactea.getInscritos().get(i).getX(), 
+                        viaLactea.getInscritos().get(i).getY(), 
+                        viaLactea.getInscritos().get(i).getAristas().get(j).getAdyacente().getX(), g);
             }
+        }
+        for (int i = 0; i < cantidadPla; i++) {
+            planetaIm1 = new ImageIcon(getClass().getResource("planeta" + (i + 1) + ".png")).getImage();
             g.drawImage(planetaIm1, viaLactea.getInscritos().get(i).getX(), viaLactea.getInscritos().get(i).getY(), null);
             g.drawString(viaLactea.getInscritos().get(i).getEtiqueta(), viaLactea.getInscritos().get(i).getX(),
                     viaLactea.getInscritos().get(i).getY() + 115);
         }
-        if (!viaLactea.getInscritos().isEmpty()) {
-            for (int i = 0; i < viaLactea.getInscritos().size(); i++) {
-
-                if (!viaLactea.getInscritos().get(i).getAristas().isEmpty()) {
-                    for (int j = 0; j < viaLactea.getInscritos().get(i).getAristas().size(); j++) {
-                        g.drawLine(viaLactea.getInscritos().get(i).getX() + 50, viaLactea.getInscritos().get(i).getY(), viaLactea.getInscritos().get(i).getAristas().get(j).getAdyacente().getX() + 50, viaLactea.getInscritos().get(i).getAristas().get(j).getAdyacente().getY());
-                    }
-                }
-            }
-        }
+        
         Image dimg = ((BufferedImage) galaxiaModif);
         jl_galaxia.setIcon(new ImageIcon(dimg));
+        cmb_planetasEliminar.removeAllItems();
         jd_eliminarPla.dispose();
 
     }//GEN-LAST:event_btn_eliminarMouseClicked
+
+    private void btn_abrirCalculadorMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn_abrirCalculadorMouseClicked
+        if (viaLactea.getInscritos().size() > 0) {
+
+            for (int i = 0; i < viaLactea.getInscritos().size(); i++) {
+                cmb_origen3.addItem(viaLactea.getInscritos().get(i).getEtiqueta());
+            }
+            for (int i = 0; i < viaLactea.getInscritos().size(); i++) {
+                cmb_destino3.addItem(viaLactea.getInscritos().get(i).getEtiqueta());
+            }
+            
+            this.jd_calculador.setLocation(100, 100);
+            this.jd_calculador.setModal(true);
+            this.jd_calculador.pack();
+            this.jd_calculador.setVisible(true);
+        
+        } else {
+            JOptionPane.showMessageDialog(rootPane, "Galaxia Vacia", ":,(", WIDTH, null);
+        }
+    
+        
+        
+    }//GEN-LAST:event_btn_abrirCalculadorMouseClicked
+
+    public void dibujarChallenger(int x1,int y1,Graphics g){
+      Image challenger = new ImageIcon(getClass().getResource("challenger2.jpg")).getImage();
+      g.drawImage(challenger, x1-120, y1-10, 120,120, rootPane);
+    }
+    
+    private void btn_selecOrigenMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn_selecOrigenMouseClicked
+        String origen = (String) cmb_origen3.getSelectedItem();
+        Image planetaIm1;
+        int cantidadPla = viaLactea.getInscritos().size();
+        
+        for (int i = 0; i < viaLactea.getInscritos().size(); i++) {
+            if (viaLactea.getInscritos().get(i).getEtiqueta().equals(origen)) {
+                    plaOrigen=viaLactea.getInscritos().get(i);
+            }
+        }
+        Graphics g = galaxiaModif.getGraphics();
+        g.drawImage(galaxiaIm, 0, 0, null);
+        
+        for (int i = 0; i < viaLactea.getInscritos().size(); i++) {
+            for (int j = 0; j < viaLactea.getInscritos().get(i).getAristas().size(); j++) {
+                dibujarConexiones(viaLactea.getInscritos().get(i).getX(), 
+                        viaLactea.getInscritos().get(i).getY(), 
+                        viaLactea.getInscritos().get(i).getAristas().get(j).getAdyacente().getX(), g);
+            }
+        }
+        for (int i = 0; i < cantidadPla; i++) {
+            planetaIm1 = new ImageIcon(getClass().getResource("planeta" + (i + 1) + ".png")).getImage();
+            g.drawImage(planetaIm1, viaLactea.getInscritos().get(i).getX(), viaLactea.getInscritos().get(i).getY(), null);
+            g.drawString(viaLactea.getInscritos().get(i).getEtiqueta(), viaLactea.getInscritos().get(i).getX(),
+                    viaLactea.getInscritos().get(i).getY() + 115);
+        }
+        dibujarChallenger(plaOrigen.getX(),plaOrigen.getY(),g);
+        
+        Image dimg = ((BufferedImage) galaxiaModif);
+        jl_galaxia.setIcon(new ImageIcon(dimg));
+
+        
+        
+    }//GEN-LAST:event_btn_selecOrigenMouseClicked
+
+    private void btn_selecDestinoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn_selecDestinoMouseClicked
+        String destino = (String) cmb_origen3.getSelectedItem();
+         for (int i = 0; i < viaLactea.getInscritos().size(); i++) {
+            if (viaLactea.getInscritos().get(i).getEtiqueta().equals(destino)) {
+                    plaDestino=viaLactea.getInscritos().get(i);
+            }
+        }
+       
+    }//GEN-LAST:event_btn_selecDestinoMouseClicked
+
+    private void btn_generarCaminoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn_generarCaminoMouseClicked
+        ArrayList<Planeta> explorados=new ArrayList<Planeta>();
+        ArrayList<Planeta> NOexplorados=new ArrayList<Planeta>();
+        ArrayList<Planeta> recorrido=new ArrayList<Planeta>();
+        explorados.add(plaOrigen);
+        int entero1=0,entero2=0;
+        
+        for (int i = 0; i < plaOrigen.getAristas().size(); i++) {
+            entero1= Integer.parseInt(plaOrigen.getAristas().get(i).getDistancia());
+            for (int j = 1; j < plaOrigen.getAristas().size(); j++) {
+                entero2= Integer.parseInt(plaOrigen.getAristas().get(j).getDistancia());
+            }
+        }
+        if (entero1>entero2) {
+            
+        }
+        
+    }//GEN-LAST:event_btn_generarCaminoMouseClicked
+
+    private void btn_generarInformeMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn_generarInformeMouseClicked
+        
+    }//GEN-LAST:event_btn_generarInformeMouseClicked
 
     /**
      * @param args the command line arguments
@@ -1048,23 +2439,32 @@ public class UPS extends javax.swing.JFrame {
     private javax.swing.JButton btn_AbrirEliminarCaminos;
     private javax.swing.JButton btn_AbrirModificarCaminos;
     private javax.swing.JButton btn_abrirAgregarCamino;
+    private javax.swing.JButton btn_abrirCalculador;
     private javax.swing.JButton btn_abrirEliminarPla;
     private javax.swing.JButton btn_agregarCaminoNuevo;
     private javax.swing.JButton btn_eliminar;
     private javax.swing.JButton btn_eliminarCamino;
+    private javax.swing.JButton btn_generarCamino;
+    private javax.swing.JButton btn_generarInforme;
     private javax.swing.JButton btn_llenarGalaxia;
     private javax.swing.JButton btn_modificarrCamino;
+    private javax.swing.JButton btn_selecDestino;
+    private javax.swing.JButton btn_selecOrigen;
     private javax.swing.JButton btn_verCaminos;
     private javax.swing.JButton btn_verCaminos1;
     private javax.swing.JButton btn_visualizar;
     private javax.swing.JComboBox cmb_destino;
     private javax.swing.JComboBox cmb_destino1;
     private javax.swing.JComboBox cmb_destino2;
+    private javax.swing.JComboBox cmb_destino3;
     private javax.swing.JComboBox cmb_origen;
     private javax.swing.JComboBox cmb_origen1;
     private javax.swing.JComboBox cmb_origen2;
+    private javax.swing.JComboBox cmb_origen3;
     private javax.swing.JComboBox cmb_planetasEliminar;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -1072,8 +2472,10 @@ public class UPS extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
     private javax.swing.JDialog jd_AgregarC;
     private javax.swing.JDialog jd_agregarPla;
+    private javax.swing.JDialog jd_calculador;
     private javax.swing.JDialog jd_eliminarC;
     private javax.swing.JDialog jd_eliminarPla;
     private javax.swing.JDialog jd_galaxia;
@@ -1083,6 +2485,7 @@ public class UPS extends javax.swing.JFrame {
     private javax.swing.JLabel jl_planetaNuevo;
     private javax.swing.JTextField jt_planetaNuevo;
     private javax.swing.JButton jt_terminarAgregarPla;
+    private javax.swing.JRadioButton rd_warp;
     private javax.swing.JSpinner sp_distancia;
     private javax.swing.JSpinner sp_distancia2;
     // End of variables declaration//GEN-END:variables

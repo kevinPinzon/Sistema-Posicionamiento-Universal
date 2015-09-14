@@ -20,14 +20,19 @@ public class Galaxia {
     }
 
     public boolean insert(Planeta a) {
-        String temp = "         El planeta "+a.getEtiqueta()+" ya esta inscrito en la galaxia, no ha sido insertado";
         boolean insert = true;
-        for (int i = 0; i < inscritos.size(); i++) {
-            if (a.getEtiqueta().equals(inscritos.get(i).getEtiqueta())) 
-                insert = false;
-        }
-        if (insert) 
+        
+        if (inscritos.isEmpty()) {
             this.inscritos.add(a);
+        }
+        for (int i = 0; i < inscritos.size(); i++) {
+            if (a.getEtiqueta().equals(inscritos.get(i).getEtiqueta())) {
+                insert=false;
+            }
+        }
+        if (insert) {
+            this.inscritos.add(a);
+        }
         return insert;
     }
 
