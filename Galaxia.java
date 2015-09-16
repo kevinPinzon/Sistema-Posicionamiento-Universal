@@ -18,6 +18,9 @@ public class Galaxia {
     public Galaxia() {
         inscritos= new ArrayList<Planeta>();
     }
+    public Galaxia(ArrayList<Planeta> inscritos) {
+        this.inscritos= inscritos;
+    }
 
     public boolean insert(Planeta a) {
         boolean insert = true;

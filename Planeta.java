@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 public class Planeta {
 
-    private double distanciaOptima;
+    private int distanciaOptima;
     private ArrayList<Aristas> aristas;
     private String etiqueta;
     private int x;
@@ -13,7 +13,7 @@ public class Planeta {
     
     
     public Planeta() {
-        this.distanciaOptima=0;
+        this.distanciaOptima=1000;
         this.etiqueta=null;
         this.aristas = new ArrayList<Aristas>();
     }
@@ -23,8 +23,23 @@ public class Planeta {
         this.etiqueta = etiqueta;
         this.x = x;
         this.y = y;
+        this.distanciaOptima=1000;
     }
-    
+ public Planeta(String etiqueta) {
+        this.aristas = new ArrayList<Aristas>();
+        this.etiqueta = etiqueta;
+        this.x = 0;
+        this.y = 0;
+        this.distanciaOptima=1000;
+    }   
+ 
+ public Planeta(String etiqueta,int distanciaOptima) {
+        this.aristas = new ArrayList<Aristas>();
+        this.etiqueta = etiqueta;
+        this.x = 0;
+        this.y = 0;
+        this.distanciaOptima=distanciaOptima;
+    }   
     
     public ArrayList<Aristas> getAristas() {
         return aristas;
@@ -43,12 +58,15 @@ public class Planeta {
         return "Planeta: "+ etiqueta;
     }
 
-    public double getDistanciaOptima() {
+    public int getDistanciaOptima() {
         return distanciaOptima;
     }
 
-    public void setDistanciaOptima(double distanciaOptima) {
-        this.distanciaOptima = distanciaOptima;
+    public void setDistanciaOptima(int distanciaOptima) {
+        if (this.distanciaOptima<distanciaOptima) {
+            this.distanciaOptima =+ distanciaOptima;    
+        }
+        
     }
 
     public String insertarAdya(Planeta a,String d){

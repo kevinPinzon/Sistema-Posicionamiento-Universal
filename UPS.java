@@ -19,6 +19,7 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
@@ -41,9 +42,12 @@ public class UPS extends javax.swing.JFrame {
     BufferedImage galaxiaModif = null;
     int agregandoCont = 0;
     Image galaxiaIm = new ImageIcon(getClass().getResource("galaxia1.jpg")).getImage();
-    Planeta plaOrigen=null;
-    Planeta plaDestino=null;
-        
+    Planeta plaOrigen = null;
+    Planeta plaDestino = null;
+    Planeta actual = plaOrigen;
+    int distanciaTotal = 0;
+    ArrayList<Integer> recorridoPeso = new ArrayList<Integer>();
+    ArrayList<String> recorridoEtiqueta = new ArrayList<String>();
 
     public UPS() {
         this.contenido = new ArrayList<String>();
@@ -353,10 +357,11 @@ public class UPS extends javax.swing.JFrame {
             .addGroup(jd_modificarCLayout.createSequentialGroup()
                 .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(22, 22, 22)
-                .addGroup(jd_modificarCLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btn_verCaminos1, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(cmb_destino2, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(cmb_origen2, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(jd_modificarCLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(cmb_origen2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jd_modificarCLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(btn_verCaminos1, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(cmb_destino2, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jd_modificarCLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(sp_distancia2, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -545,10 +550,8 @@ public class UPS extends javax.swing.JFrame {
                             .addGroup(jd_calculadorLayout.createSequentialGroup()
                                 .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(cmb_origen3, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(jd_calculadorLayout.createSequentialGroup()
-                        .addComponent(btn_selecDestino)
+                                .addComponent(cmb_origen3, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(btn_selecDestino))
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
         jd_calculadorLayout.setVerticalGroup(
@@ -618,6 +621,7 @@ public class UPS extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btn_llenarGalaxiaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn_llenarGalaxiaMouseClicked
+    
         if (seleccionado.showDialog(null, "ABRIR ") == JFileChooser.APPROVE_OPTION) {
             archivo = seleccionado.getSelectedFile();
             if (archivo.getName().endsWith("txt")) {
@@ -643,10 +647,10 @@ public class UPS extends javax.swing.JFrame {
         BufferedImage combined = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
         String[] tempEntrada;
         int contCord = 0;
-        
+
         for (int cont = 0; cont < contenido.size(); cont++) {
-            boolean insert1=true;
-            boolean insert2=true;
+            boolean insert1 = true;
+            boolean insert2 = true;
             Planeta procesando1 = null;
             Planeta procesando2 = null;
             tempEntrada = contenido.get(cont).split("-");
@@ -662,33 +666,33 @@ public class UPS extends javax.swing.JFrame {
 
                 viaLactea.insert(procesando2);
             } else {
-                System.out.println("entro al else de no-empty con :"+cont);
+                System.out.println("entro al else de no-empty con :" + cont);
                 if (contCord < CordenadaX.length) {
-                    System.out.println("entro al if de cordenadas con :"+cont);
+                    System.out.println("entro al if de cordenadas con :" + cont);
                     for (int i = 0; i < viaLactea.getInscritos().size(); i++) {
                         if (viaLactea.getInscritos().get(i).getEtiqueta().equals(tempEntrada[0])) {
-                           insert1=false; 
-                            System.out.println("vuelta: "+cont);
-                            System.out.println("NO ingreso "+tempEntrada[0]);
+                            insert1 = false;
+                            System.out.println("vuelta: " + cont);
+                            System.out.println("NO ingreso " + tempEntrada[0]);
                         }
                     }
                     for (int i = 0; i < viaLactea.getInscritos().size(); i++) {
                         if (viaLactea.getInscritos().get(i).getEtiqueta().equals(tempEntrada[1])) {
-                           insert2=false; 
-                           System.out.println("vuelta: "+cont);
-                        System.out.println("NO ingreso "+tempEntrada[1]);
+                            insert2 = false;
+                            System.out.println("vuelta: " + cont);
+                            System.out.println("NO ingreso " + tempEntrada[1]);
                         }
                     }
                     if (insert1) {
-                        System.out.println("vuelta: "+cont);
-                        System.out.println("ingreso "+tempEntrada[0]);
-                        viaLactea.insert(new Planeta(tempEntrada[0],CordenadaX[contCord],CordenadaY[contCord]));
+                        System.out.println("vuelta: " + cont);
+                        System.out.println("ingreso " + tempEntrada[0]);
+                        viaLactea.insert(new Planeta(tempEntrada[0], CordenadaX[contCord], CordenadaY[contCord]));
                         contCord++;
                     }
                     if (insert2) {
-                        System.out.println("vuelta: "+cont);
-                        System.out.println("ingreso "+tempEntrada[1]);
-                        viaLactea.insert(new Planeta(tempEntrada[1],CordenadaX[contCord],CordenadaY[contCord]));
+                        System.out.println("vuelta: " + cont);
+                        System.out.println("ingreso " + tempEntrada[1]);
+                        viaLactea.insert(new Planeta(tempEntrada[1], CordenadaX[contCord], CordenadaY[contCord]));
                         contCord++;
                     }
                 }
@@ -703,20 +707,20 @@ public class UPS extends javax.swing.JFrame {
                 }
             }
         }
-        
+
         System.out.println("Inscritos en via lactea: ");
         for (int i = 0; i < viaLactea.getInscritos().size(); i++) {
-            System.out.println(viaLactea.getInscritos().get(i).getEtiqueta()+" "
-                    +viaLactea.getInscritos().get(i).getX());    
+            System.out.println(viaLactea.getInscritos().get(i).getEtiqueta() + " "
+                    + viaLactea.getInscritos().get(i).getX());
         }
         for (int i = 0; i < viaLactea.getInscritos().size(); i++) {
-            System.out.println("adyacentes de: "+viaLactea.getInscritos().get(i));
+            System.out.println("adyacentes de: " + viaLactea.getInscritos().get(i));
             for (int j = 0; j < viaLactea.getInscritos().get(i).getAristas().size(); j++) {
                 System.out.println(viaLactea.getInscritos().get(i).getAristas().get(j).getAdyacente().getEtiqueta());
             }
 
         }
-        
+
         Image planetaIm1;
         int cantidadPla = viaLactea.getInscritos().size();
         Graphics g = combined.getGraphics();
@@ -778,8 +782,8 @@ public class UPS extends javax.swing.JFrame {
             case 110:
                 System.out.println("        x1:110");
                 if (x2 == 390) {
-                    punto1 = new Point(x1, y1+20);
-                    punto2 = new Point(x2, y1+20);
+                    punto1 = new Point(x1 + 100, y1 + 20);
+                    punto2 = new Point(x2, y1 + 20);
                     ty = -(punto1.y - punto2.y) * 1.0;
                     tx = (punto1.x - punto2.x) * 1.0;
                     ang = Math.atan(ty / tx);
@@ -796,16 +800,16 @@ public class UPS extends javax.swing.JFrame {
                     p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
 
                     Graphics2D g2D = (Graphics2D) g;
-                    g.setColor(Color.yellow);
-                    g2D.setStroke(new BasicStroke(2.2f));
+                    g.setColor(Color.green);
+                    g2D.setStroke(new BasicStroke(4.2f));
                     g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
                     g.drawLine(p1.x, p1.y, punto.x, punto.y);
                     g.drawLine(p2.x, p2.y, punto.x, punto.y);
                     System.out.println("    x2: 390");
                 }
                 if (x2 == 690) {
-                    punto1 = new Point(x1+50, y1+50);
-                    punto2 = new Point(x2, y1+50);
+                    punto1 = new Point(x1 + 50, y1 + 50);
+                    punto2 = new Point(x2, y1 + 50);
                     ty = -(punto1.y - punto2.y) * 1.0;
                     tx = (punto1.x - punto2.x) * 1.0;
                     ang = Math.atan(ty / tx);
@@ -822,16 +826,16 @@ public class UPS extends javax.swing.JFrame {
                     p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
 
                     Graphics2D g2D = (Graphics2D) g;
-                    g.setColor(Color.yellow);
-                    g2D.setStroke(new BasicStroke(2.2f));
+                    g.setColor(Color.green);
+                    g2D.setStroke(new BasicStroke(4.2f));
                     g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
                     g.drawLine(p1.x, p1.y, punto.x, punto.y);
                     g.drawLine(p2.x, p2.y, punto.x, punto.y);
                     System.out.println("    x2: 690");
                 }
                 if (x2 == 115) {
-                    punto1 = new Point(x1+50, y1+100);
-                    punto2 = new Point(x1+50, 720);
+                    punto1 = new Point(x1 + 50, y1 + 100);
+                    punto2 = new Point(x1 + 50, 720);
                     ty = -(punto1.y - punto2.y) * 1.0;
                     tx = (punto1.x - punto2.x) * 1.0;
                     ang = Math.atan(ty / tx);
@@ -848,8 +852,8 @@ public class UPS extends javax.swing.JFrame {
                     p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
 
                     Graphics2D g2D = (Graphics2D) g;
-                    g.setColor(Color.yellow);
-                    g2D.setStroke(new BasicStroke(2.2f));
+                    g.setColor(Color.green);
+                    g2D.setStroke(new BasicStroke(4.2f));
                     g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
                     g.drawLine(p1.x, p1.y, punto.x, punto.y);
                     g.drawLine(p2.x, p2.y, punto.x, punto.y);
@@ -872,15 +876,15 @@ public class UPS extends javax.swing.JFrame {
                     p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
 
                     Graphics2D g2D = (Graphics2D) g;
-                    g.setColor(Color.yellow);
-                    g2D.setStroke(new BasicStroke(2.2f));
+                    g.setColor(Color.green);
+                    g2D.setStroke(new BasicStroke(4.2f));
                     g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
                     g.drawLine(p1.x, p1.y, punto.x, punto.y);
                     g.drawLine(p2.x, p2.y, punto.x, punto.y);
                     System.out.println("    x2: 520");
                 }
-                if (x2==310) {
-                    punto1 = new Point(x1+20, y1);
+                if (x2 == 310) {
+                    punto1 = new Point(x1 + 20, y1);
                     punto2 = new Point(x2, 550);
                     ty = -(punto1.y - punto2.y) * 1.0;
                     tx = (punto1.x - punto2.x) * 1.0;
@@ -896,15 +900,15 @@ public class UPS extends javax.swing.JFrame {
                     p2.x = (int) (punto.x + dist * Math.cos(ang + Math.toRadians(angSep)));
                     p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
                     Graphics2D g2D = (Graphics2D) g;
-                    g.setColor(Color.yellow);
-                    g2D.setStroke(new BasicStroke(2.2f));
+                    g.setColor(Color.green);
+                    g2D.setStroke(new BasicStroke(4.2f));
                     g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
                     g.drawLine(p1.x, p1.y, punto.x, punto.y);
                     g.drawLine(p2.x, p2.y, punto.x, punto.y);
                     System.out.println("    x2: 310");
                 }
-                if (x2==710) {
-                    punto1 = new Point(x1+20, y1+20);
+                if (x2 == 710) {
+                    punto1 = new Point(x1 + 20, y1 + 20);
                     punto2 = new Point(x2, 550);
                     ty = -(punto1.y - punto2.y) * 1.0;
                     tx = (punto1.x - punto2.x) * 1.0;
@@ -922,12 +926,12 @@ public class UPS extends javax.swing.JFrame {
                     p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
 
                     Graphics2D g2D = (Graphics2D) g;
-                    g.setColor(Color.yellow);
-                    g2D.setStroke(new BasicStroke(2.2f));
+                    g.setColor(Color.green);
+                    g2D.setStroke(new BasicStroke(4.2f));
                     g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
                     g.drawLine(p1.x, p1.y, punto.x, punto.y);
                     g.drawLine(p2.x, p2.y, punto.x, punto.y);
-                    System.out.println("    x2: 710");                  
+                    System.out.println("    x2: 710");
                 }
                 break;
             case 390:
@@ -935,8 +939,8 @@ public class UPS extends javax.swing.JFrame {
 //int CordenadaX[] = {110, 390, 690, 115, 520, 310, 710}
 //int CordenadaY[] = {300, 250, 290, 720, 710, 550, 550}
                 if (x2 == 110) {
-                    punto1 = new Point(x1, y1+60);
-                    punto2 = new Point(x2+100, y1+60);
+                    punto1 = new Point(x1, y1 + 60);
+                    punto2 = new Point(x2 + 100, y1 + 60);
                     ty = -(punto1.y - punto2.y) * 1.0;
                     tx = (punto1.x - punto2.x) * 1.0;
                     ang = Math.atan(ty / tx);
@@ -954,15 +958,15 @@ public class UPS extends javax.swing.JFrame {
 
                     Graphics2D g2D = (Graphics2D) g;
                     g.setColor(Color.green);
-                    g2D.setStroke(new BasicStroke(2.2f));
+                    g2D.setStroke(new BasicStroke(4.2f));
                     g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
                     g.drawLine(p1.x, p1.y, punto.x, punto.y);
                     g.drawLine(p2.x, p2.y, punto.x, punto.y);
                     System.out.println("    x2:110");
                 }
                 if (x2 == 690) {
-                    punto1 = new Point(x1+50, y1+50);
-                    punto2 = new Point(x2, y1+50);
+                    punto1 = new Point(x1 + 50, y1 + 50);
+                    punto2 = new Point(x2, y1 + 50);
                     ty = -(punto1.y - punto2.y) * 1.0;
                     tx = (punto1.x - punto2.x) * 1.0;
                     ang = Math.atan(ty / tx);
@@ -980,15 +984,15 @@ public class UPS extends javax.swing.JFrame {
 
                     Graphics2D g2D = (Graphics2D) g;
                     g.setColor(Color.green);
-                    g2D.setStroke(new BasicStroke(2.2f));
+                    g2D.setStroke(new BasicStroke(4.2f));
                     g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
                     g.drawLine(p1.x, p1.y, punto.x, punto.y);
                     g.drawLine(p2.x, p2.y, punto.x, punto.y);
                     System.out.println("    x2:690");
                 }
                 if (x2 == 115) {
-                    punto1 = new Point(x1+50, y1);
-                    punto2 = new Point(x2+90, 720);
+                    punto1 = new Point(x1 + 50, y1);
+                    punto2 = new Point(x2 + 90, 720);
                     ty = -(punto1.y - punto2.y) * 1.0;
                     tx = (punto1.x - punto2.x) * 1.0;
                     ang = Math.atan(ty / tx);
@@ -1006,15 +1010,15 @@ public class UPS extends javax.swing.JFrame {
 
                     Graphics2D g2D = (Graphics2D) g;
                     g.setColor(Color.green);
-                    g2D.setStroke(new BasicStroke(2.2f));
+                    g2D.setStroke(new BasicStroke(4.2f));
                     g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
                     g.drawLine(p1.x, p1.y, punto.x, punto.y);
                     g.drawLine(p2.x, p2.y, punto.x, punto.y);
                     System.out.println("    x2:115");
                 }
                 if (x2 == 520) {
-                    punto1 = new Point(x1+50, y1+5);
-                    punto2 = new Point(x2+50, 710);
+                    punto1 = new Point(x1 + 50, y1 + 5);
+                    punto2 = new Point(x2 + 50, 710);
                     ty = -(punto1.y - punto2.y) * 1.0;
                     tx = (punto1.x - punto2.x) * 1.0;
                     ang = Math.atan(ty / tx);
@@ -1032,15 +1036,15 @@ public class UPS extends javax.swing.JFrame {
 
                     Graphics2D g2D = (Graphics2D) g;
                     g.setColor(Color.green);
-                    g2D.setStroke(new BasicStroke(2.2f));
+                    g2D.setStroke(new BasicStroke(4.2f));
                     g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
                     g.drawLine(p1.x, p1.y, punto.x, punto.y);
                     g.drawLine(p2.x, p2.y, punto.x, punto.y);
                     System.out.println("    x2:520");
                 }
-                if (x2==310) {
-                    punto1 = new Point(x1+50, y1+50);
-                    punto2 = new Point(x2+50, 550);
+                if (x2 == 310) {
+                    punto1 = new Point(x1 + 50, y1 + 50);
+                    punto2 = new Point(x2 + 50, 550);
                     ty = -(punto1.y - punto2.y) * 1.0;
                     tx = (punto1.x - punto2.x) * 1.0;
                     ang = Math.atan(ty / tx);
@@ -1058,14 +1062,14 @@ public class UPS extends javax.swing.JFrame {
 
                     Graphics2D g2D = (Graphics2D) g;
                     g.setColor(Color.green);
-                    g2D.setStroke(new BasicStroke(2.2f));
+                    g2D.setStroke(new BasicStroke(4.2f));
                     g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
                     g.drawLine(p1.x, p1.y, punto.x, punto.y);
                     g.drawLine(p2.x, p2.y, punto.x, punto.y);
                     System.out.println("    x2:310");
                 }
-                if (x2==710) {
-                    punto1 = new Point(x1+20, y1+20);
+                if (x2 == 710) {
+                    punto1 = new Point(x1 + 20, y1 + 20);
                     punto2 = new Point(x2, 550);
                     ty = -(punto1.y - punto2.y) * 1.0;
                     tx = (punto1.x - punto2.x) * 1.0;
@@ -1084,7 +1088,7 @@ public class UPS extends javax.swing.JFrame {
 
                     Graphics2D g2D = (Graphics2D) g;
                     g.setColor(Color.green);
-                    g2D.setStroke(new BasicStroke(2.2f));
+                    g2D.setStroke(new BasicStroke(4.2f));
                     g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
                     g.drawLine(p1.x, p1.y, punto.x, punto.y);
                     g.drawLine(p2.x, p2.y, punto.x, punto.y);
@@ -1096,8 +1100,8 @@ public class UPS extends javax.swing.JFrame {
 //int CordenadaX[] = {110, 390, 690, 115, 520, 310, 710}
 //int CordenadaY[] = {300, 250, 290, 720, 710, 550, 550}
                 if (x2 == 110) {
-                    punto1 = new Point(x1, y1+60);
-                    punto2 = new Point(x2+100, y1+60);
+                    punto1 = new Point(x1, y1 + 60);
+                    punto2 = new Point(x2 + 100, y1 + 60);
                     ty = -(punto1.y - punto2.y) * 1.0;
                     tx = (punto1.x - punto2.x) * 1.0;
                     ang = Math.atan(ty / tx);
@@ -1115,15 +1119,15 @@ public class UPS extends javax.swing.JFrame {
 
                     Graphics2D g2D = (Graphics2D) g;
                     g.setColor(Color.green);
-                    g2D.setStroke(new BasicStroke(2.2f));
+                    g2D.setStroke(new BasicStroke(4.2f));
                     g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
                     g.drawLine(p1.x, p1.y, punto.x, punto.y);
                     g.drawLine(p2.x, p2.y, punto.x, punto.y);
                     System.out.println("    x2:110");
                 }
                 if (x2 == 390) {
-                    punto1 = new Point(x1+50, y1+40);
-                    punto2 = new Point(x2+100, y1+40);
+                    punto1 = new Point(x1 + 50, y1 + 40);
+                    punto2 = new Point(x2 + 100, y1 + 40);
                     ty = -(punto1.y - punto2.y) * 1.0;
                     tx = (punto1.x - punto2.x) * 1.0;
                     ang = Math.atan(ty / tx);
@@ -1141,16 +1145,16 @@ public class UPS extends javax.swing.JFrame {
 
                     Graphics2D g2D = (Graphics2D) g;
                     g.setColor(Color.green);
-                    g2D.setStroke(new BasicStroke(2.2f));
+                    g2D.setStroke(new BasicStroke(4.2f));
                     g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
                     g.drawLine(p1.x, p1.y, punto.x, punto.y);
                     g.drawLine(p2.x, p2.y, punto.x, punto.y);
-                    
+
                     System.out.println("    x2:390");
                 }
                 if (x2 == 115) {
-                    punto1 = new Point(x1+50, y1);
-                    punto2 = new Point(x2+90, 720);
+                    punto1 = new Point(x1 + 50, y1);
+                    punto2 = new Point(x2 + 90, 720);
                     ty = -(punto1.y - punto2.y) * 1.0;
                     tx = (punto1.x - punto2.x) * 1.0;
                     ang = Math.atan(ty / tx);
@@ -1168,7 +1172,7 @@ public class UPS extends javax.swing.JFrame {
 
                     Graphics2D g2D = (Graphics2D) g;
                     g.setColor(Color.green);
-                    g2D.setStroke(new BasicStroke(2.2f));
+                    g2D.setStroke(new BasicStroke(4.2f));
                     g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
                     g.drawLine(p1.x, p1.y, punto.x, punto.y);
                     g.drawLine(p2.x, p2.y, punto.x, punto.y);
@@ -1176,8 +1180,8 @@ public class UPS extends javax.swing.JFrame {
                     System.out.println("    x2:115");
                 }
                 if (x2 == 520) {
-                    punto1 = new Point(x1+50, y1+5);
-                    punto2 = new Point(x2+50, 710);
+                    punto1 = new Point(x1 + 50, y1 + 5);
+                    punto2 = new Point(x2 + 50, 710);
                     ty = -(punto1.y - punto2.y) * 1.0;
                     tx = (punto1.x - punto2.x) * 1.0;
                     ang = Math.atan(ty / tx);
@@ -1195,15 +1199,15 @@ public class UPS extends javax.swing.JFrame {
 
                     Graphics2D g2D = (Graphics2D) g;
                     g.setColor(Color.green);
-                    g2D.setStroke(new BasicStroke(2.2f));
+                    g2D.setStroke(new BasicStroke(4.2f));
                     g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
                     g.drawLine(p1.x, p1.y, punto.x, punto.y);
                     g.drawLine(p2.x, p2.y, punto.x, punto.y);
                     System.out.println("    x2:520");
                 }
-                if (x2==310) {
-                    punto1 = new Point(x1+50, y1+50);
-                    punto2 = new Point(x2+130, 545);
+                if (x2 == 310) {
+                    punto1 = new Point(x1 + 50, y1 + 50);
+                    punto2 = new Point(x2 + 130, 545);
                     ty = -(punto1.y - punto2.y) * 1.0;
                     tx = (punto1.x - punto2.x) * 1.0;
                     ang = Math.atan(ty / tx);
@@ -1221,15 +1225,15 @@ public class UPS extends javax.swing.JFrame {
 
                     Graphics2D g2D = (Graphics2D) g;
                     g.setColor(Color.green);
-                    g2D.setStroke(new BasicStroke(2.2f));
+                    g2D.setStroke(new BasicStroke(4.2f));
                     g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
                     g.drawLine(p1.x, p1.y, punto.x, punto.y);
                     g.drawLine(p2.x, p2.y, punto.x, punto.y);
                     System.out.println("    x2:310");
                 }
-                if (x2==710) {
-                    punto1 = new Point(x1+40, y1+20);
-                    punto2 = new Point(x2+20, 550);
+                if (x2 == 710) {
+                    punto1 = new Point(x1 + 40, y1 + 20);
+                    punto2 = new Point(x2 + 20, 550);
                     ty = -(punto1.y - punto2.y) * 1.0;
                     tx = (punto1.x - punto2.x) * 1.0;
                     ang = Math.atan(ty / tx);
@@ -1247,7 +1251,7 @@ public class UPS extends javax.swing.JFrame {
 
                     Graphics2D g2D = (Graphics2D) g;
                     g.setColor(Color.green);
-                    g2D.setStroke(new BasicStroke(2.2f));
+                    g2D.setStroke(new BasicStroke(4.2f));
                     g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
                     g.drawLine(p1.x, p1.y, punto.x, punto.y);
                     g.drawLine(p2.x, p2.y, punto.x, punto.y);
@@ -1259,8 +1263,8 @@ public class UPS extends javax.swing.JFrame {
 //int CordenadaX[] = {110, 390, 690, 115, 520, 310, 710}
 //int CordenadaY[] = {300, 250, 290, 720, 710, 550, 550}
                 if (x2 == 110) {
-                    punto1 = new Point(x1+50, y1+20);
-                    punto2 = new Point(x2+70, 400);
+                    punto1 = new Point(x1 + 50, y1 + 20);
+                    punto2 = new Point(x2 + 70, 400);
                     ty = -(punto1.y - punto2.y) * 1.0;
                     tx = (punto1.x - punto2.x) * 1.0;
                     ang = Math.atan(ty / tx);
@@ -1277,8 +1281,8 @@ public class UPS extends javax.swing.JFrame {
                     p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
 
                     Graphics2D g2D = (Graphics2D) g;
-                    g.setColor(Color.magenta);
-                    g2D.setStroke(new BasicStroke(2.2f));
+                    g.setColor(Color.green);
+                    g2D.setStroke(new BasicStroke(4.2f));
                     g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
                     g.drawLine(p1.x, p1.y, punto.x, punto.y);
                     g.drawLine(p2.x, p2.y, punto.x, punto.y);
@@ -1287,7 +1291,7 @@ public class UPS extends javax.swing.JFrame {
                 //int CordenadaX[] = {110, 390, 690, 115, 520, 310, 710, 970, 1020, 1200};
                 //int CordenadaY[] = {300, 250, 290, 720, 710, 550, 550, 250, 720, 520};
                 if (x2 == 390) {
-                    punto1 = new Point(x1+50, y1+50);
+                    punto1 = new Point(x1 + 50, y1 + 50);
                     punto2 = new Point(x2, 350);
                     ty = -(punto1.y - punto2.y) * 1.0;
                     tx = (punto1.x - punto2.x) * 1.0;
@@ -1305,18 +1309,18 @@ public class UPS extends javax.swing.JFrame {
                     p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
 
                     Graphics2D g2D = (Graphics2D) g;
-                    g.setColor(Color.magenta);
-                    g2D.setStroke(new BasicStroke(2.2f));
+                    g.setColor(Color.green);
+                    g2D.setStroke(new BasicStroke(4.2f));
                     g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
                     g.drawLine(p1.x, p1.y, punto.x, punto.y);
                     g.drawLine(p2.x, p2.y, punto.x, punto.y);
-                    
+
                     System.out.println("    x2:390");
                 }
                 //int CordenadaX[] = {110, 390, 690, 115, 520, 310, 710, 970, 1020, 1200};
                 //int CordenadaY[] = {300, 250, 290, 720, 710, 550, 550, 250, 720, 520};
                 if (x2 == 690) {
-                    punto1 = new Point(x1+50, y1+50);
+                    punto1 = new Point(x1 + 50, y1 + 50);
                     punto2 = new Point(x2, 390);
                     ty = -(punto1.y - punto2.y) * 1.0;
                     tx = (punto1.x - punto2.x) * 1.0;
@@ -1334,8 +1338,8 @@ public class UPS extends javax.swing.JFrame {
                     p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
 
                     Graphics2D g2D = (Graphics2D) g;
-                    g.setColor(Color.magenta);
-                    g2D.setStroke(new BasicStroke(2.2f));
+                    g.setColor(Color.green);
+                    g2D.setStroke(new BasicStroke(4.2f));
                     g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
                     g.drawLine(p1.x, p1.y, punto.x, punto.y);
                     g.drawLine(p2.x, p2.y, punto.x, punto.y);
@@ -1345,8 +1349,8 @@ public class UPS extends javax.swing.JFrame {
                 //int CordenadaX[] = {110, 390, 690, 115, 520, 310, 710, 970, 1020, 1200};
                 //int CordenadaY[] = {300, 250, 290, 720, 710, 550, 550, 250, 720, 520};
                 if (x2 == 520) {
-                    punto1 = new Point(x1+100, y1+30);
-                    punto2 = new Point(x2, y1+30);
+                    punto1 = new Point(x1 + 100, y1 + 30);
+                    punto2 = new Point(x2, y1 + 30);
                     ty = -(punto1.y - punto2.y) * 1.0;
                     tx = (punto1.x - punto2.x) * 1.0;
                     ang = Math.atan(ty / tx);
@@ -1363,8 +1367,8 @@ public class UPS extends javax.swing.JFrame {
                     p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
 
                     Graphics2D g2D = (Graphics2D) g;
-                    g.setColor(Color.magenta);
-                    g2D.setStroke(new BasicStroke(2.2f));
+                    g.setColor(Color.green);
+                    g2D.setStroke(new BasicStroke(4.2f));
                     g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
                     g.drawLine(p1.x, p1.y, punto.x, punto.y);
                     g.drawLine(p2.x, p2.y, punto.x, punto.y);
@@ -1372,8 +1376,8 @@ public class UPS extends javax.swing.JFrame {
                 }
                 //int CordenadaX[] = {110, 390, 690, 115, 520, 310, 710, 970, 1020, 1200};
                 //int CordenadaY[] = {300, 250, 290, 720, 710, 550, 550, 250, 720, 520};
-                if (x2==310) {
-                    punto1 = new Point(x1+50, y1);
+                if (x2 == 310) {
+                    punto1 = new Point(x1 + 50, y1);
                     punto2 = new Point(x2, 570);
                     ty = -(punto1.y - punto2.y) * 1.0;
                     tx = (punto1.x - punto2.x) * 1.0;
@@ -1391,8 +1395,8 @@ public class UPS extends javax.swing.JFrame {
                     p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
 
                     Graphics2D g2D = (Graphics2D) g;
-                    g.setColor(Color.magenta);
-                    g2D.setStroke(new BasicStroke(2.2f));
+                    g.setColor(Color.green);
+                    g2D.setStroke(new BasicStroke(4.2f));
                     g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
                     g.drawLine(p1.x, p1.y, punto.x, punto.y);
                     g.drawLine(p2.x, p2.y, punto.x, punto.y);
@@ -1400,9 +1404,9 @@ public class UPS extends javax.swing.JFrame {
                 }
                 //int CordenadaX[] = {110, 390, 690, 115, 520, 310, 710, 970, 1020, 1200};
                 //int CordenadaY[] = {300, 250, 290, 720, 710, 550, 550, 250, 720, 520};
-                if (x2==710) {
-                    punto1 = new Point(x1+100, y1+40);
-                    punto2 = new Point(x2, 550+50);
+                if (x2 == 710) {
+                    punto1 = new Point(x1 + 100, y1 + 40);
+                    punto2 = new Point(x2, 550 + 50);
                     ty = -(punto1.y - punto2.y) * 1.0;
                     tx = (punto1.x - punto2.x) * 1.0;
                     ang = Math.atan(ty / tx);
@@ -1419,8 +1423,8 @@ public class UPS extends javax.swing.JFrame {
                     p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
 
                     Graphics2D g2D = (Graphics2D) g;
-                    g.setColor(Color.magenta);
-                    g2D.setStroke(new BasicStroke(2.2f));
+                    g.setColor(Color.green);
+                    g2D.setStroke(new BasicStroke(4.2f));
                     g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
                     g.drawLine(p1.x, p1.y, punto.x, punto.y);
                     g.drawLine(p2.x, p2.y, punto.x, punto.y);
@@ -1434,7 +1438,7 @@ public class UPS extends javax.swing.JFrame {
                 if (x2 == 110) {
                     System.out.println("    x2:110");
                     punto1 = new Point(x1, y1);
-                    punto2 = new Point(x2+100, 400);
+                    punto2 = new Point(x2 + 100, 400);
                     ty = -(punto1.y - punto2.y) * 1.0;
                     tx = (punto1.x - punto2.x) * 1.0;
                     ang = Math.atan(ty / tx);
@@ -1451,8 +1455,8 @@ public class UPS extends javax.swing.JFrame {
                     p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
 
                     Graphics2D g2D = (Graphics2D) g;
-                    g.setColor(Color.white);
-                    g2D.setStroke(new BasicStroke(2.2f));
+                    g.setColor(Color.green);
+                    g2D.setStroke(new BasicStroke(4.2f));
                     g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
                     g.drawLine(p1.x, p1.y, punto.x, punto.y);
                     g.drawLine(p2.x, p2.y, punto.x, punto.y);
@@ -1462,7 +1466,7 @@ public class UPS extends javax.swing.JFrame {
                 if (x2 == 390) {
                     System.out.println("    x2:390");
                     punto1 = new Point(x1, y1);
-                    punto2 = new Point(x2+80, 350);
+                    punto2 = new Point(x2 + 80, 350);
                     ty = -(punto1.y - punto2.y) * 1.0;
                     tx = (punto1.x - punto2.x) * 1.0;
                     ang = Math.atan(ty / tx);
@@ -1479,19 +1483,19 @@ public class UPS extends javax.swing.JFrame {
                     p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
 
                     Graphics2D g2D = (Graphics2D) g;
-                    g.setColor(Color.white);
-                    g2D.setStroke(new BasicStroke(2.2f));
+                    g.setColor(Color.green);
+                    g2D.setStroke(new BasicStroke(4.2f));
                     g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
                     g.drawLine(p1.x, p1.y, punto.x, punto.y);
                     g.drawLine(p2.x, p2.y, punto.x, punto.y);
-                    
+
                 }
                 //int CordenadaX[] = {110, 390, 690, 115, 520, 310, 710, 970, 1020, 1200};
                 //int CordenadaY[] = {300, 250, 290, 720, 710, 550, 550, 250, 720, 520};
                 if (x2 == 690) {
                     System.out.println("    x2:690");
-                    punto1 = new Point(x1+100, y1);
-                    punto2 = new Point(x2+20, 390);
+                    punto1 = new Point(x1 + 100, y1);
+                    punto2 = new Point(x2 + 20, 390);
                     ty = -(punto1.y - punto2.y) * 1.0;
                     tx = (punto1.x - punto2.x) * 1.0;
                     ang = Math.atan(ty / tx);
@@ -1508,8 +1512,8 @@ public class UPS extends javax.swing.JFrame {
                     p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
 
                     Graphics2D g2D = (Graphics2D) g;
-                    g.setColor(Color.white);
-                    g2D.setStroke(new BasicStroke(2.2f));
+                    g.setColor(Color.green);
+                    g2D.setStroke(new BasicStroke(4.2f));
                     g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
                     g.drawLine(p1.x, p1.y, punto.x, punto.y);
                     g.drawLine(p2.x, p2.y, punto.x, punto.y);
@@ -1519,8 +1523,8 @@ public class UPS extends javax.swing.JFrame {
                 //int CordenadaY[] = {300, 250, 290, 720, 710, 550, 550, 250, 720, 520};                
                 if (x2 == 115) {
                     System.out.println("    x2:115");
-                    punto1 = new Point(x1, y1+50);
-                    punto2 = new Point(x2+100, y1+50);
+                    punto1 = new Point(x1, y1 + 50);
+                    punto2 = new Point(x2 + 100, y1 + 50);
                     ty = -(punto1.y - punto2.y) * 1.0;
                     tx = (punto1.x - punto2.x) * 1.0;
                     ang = Math.atan(ty / tx);
@@ -1537,19 +1541,19 @@ public class UPS extends javax.swing.JFrame {
                     p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
 
                     Graphics2D g2D = (Graphics2D) g;
-                    g.setColor(Color.white);
-                    g2D.setStroke(new BasicStroke(2.2f));
+                    g.setColor(Color.green);
+                    g2D.setStroke(new BasicStroke(4.2f));
                     g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
                     g.drawLine(p1.x, p1.y, punto.x, punto.y);
                     g.drawLine(p2.x, p2.y, punto.x, punto.y);
-                    
+
                 }
                 //int CordenadaX[] = {110, 390, 690, 115, 520, 310, 710, 970, 1020, 1200};
                 //int CordenadaY[] = {300, 250, 290, 720, 710, 550, 550, 250, 720, 520};                                
-                if (x2==310) {
+                if (x2 == 310) {
                     System.out.println("    x2:310");
-                    punto1 = new Point(x1+15, y1);
-                    punto2 = new Point(x2+100, 650);
+                    punto1 = new Point(x1 + 15, y1);
+                    punto2 = new Point(x2 + 100, 650);
                     ty = -(punto1.y - punto2.y) * 1.0;
                     tx = (punto1.x - punto2.x) * 1.0;
                     ang = Math.atan(ty / tx);
@@ -1566,18 +1570,18 @@ public class UPS extends javax.swing.JFrame {
                     p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
 
                     Graphics2D g2D = (Graphics2D) g;
-                    g.setColor(Color.white);
-                    g2D.setStroke(new BasicStroke(2.2f));
+                    g.setColor(Color.green);
+                    g2D.setStroke(new BasicStroke(4.2f));
                     g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
                     g.drawLine(p1.x, p1.y, punto.x, punto.y);
                     g.drawLine(p2.x, p2.y, punto.x, punto.y);
-                    
+
                 }
                 //int CordenadaX[] = {110, 390, 690, 115, 520, 310, 710}
                 //int CordenadaY[] = {300, 250, 290, 720, 710, 550, 550}
-                if (x2==710) {
+                if (x2 == 710) {
                     System.out.println("    x2:710");
-                    punto1 = new Point(x1+90, y1);
+                    punto1 = new Point(x1 + 90, y1);
                     punto2 = new Point(x2, 650);
                     ty = -(punto1.y - punto2.y) * 1.0;
                     tx = (punto1.x - punto2.x) * 1.0;
@@ -1595,12 +1599,12 @@ public class UPS extends javax.swing.JFrame {
                     p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
 
                     Graphics2D g2D = (Graphics2D) g;
-                    g.setColor(Color.white);
-                    g2D.setStroke(new BasicStroke(2.2f));
+                    g.setColor(Color.green);
+                    g2D.setStroke(new BasicStroke(4.2f));
                     g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
                     g.drawLine(p1.x, p1.y, punto.x, punto.y);
                     g.drawLine(p2.x, p2.y, punto.x, punto.y);
-                    System.out.println("entro al 710");                    
+                    System.out.println("entro al 710");
                 }
                 break;
             case 310:
@@ -1610,7 +1614,7 @@ public class UPS extends javax.swing.JFrame {
                 if (x2 == 110) {
                     System.out.println("    x2:110");
                     punto1 = new Point(x1, y1);
-                    punto2 = new Point(x2+90,400);
+                    punto2 = new Point(x2 + 90, 400);
                     ty = -(punto1.y - punto2.y) * 1.0;
                     tx = (punto1.x - punto2.x) * 1.0;
                     ang = Math.atan(ty / tx);
@@ -1627,8 +1631,8 @@ public class UPS extends javax.swing.JFrame {
                     p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
 
                     Graphics2D g2D = (Graphics2D) g;
-                    g.setColor(Color.orange);
-                    g2D.setStroke(new BasicStroke(2.2f));
+                    g.setColor(Color.green);
+                    g2D.setStroke(new BasicStroke(4.2f));
                     g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
                     g.drawLine(p1.x, p1.y, punto.x, punto.y);
                     g.drawLine(p2.x, p2.y, punto.x, punto.y);
@@ -1637,8 +1641,8 @@ public class UPS extends javax.swing.JFrame {
                 //int CordenadaY[] = {300, 250, 290, 720, 710, 550, 550}
                 if (x2 == 390) {
                     System.out.println("    x2:390");
-                    punto1 = new Point(x1+50, y1);
-                    punto2 = new Point(x2+90, 350);
+                    punto1 = new Point(x1 + 50, y1);
+                    punto2 = new Point(x2 + 90, 350);
                     ty = -(punto1.y - punto2.y) * 1.0;
                     tx = (punto1.x - punto2.x) * 1.0;
                     ang = Math.atan(ty / tx);
@@ -1655,18 +1659,18 @@ public class UPS extends javax.swing.JFrame {
                     p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
 
                     Graphics2D g2D = (Graphics2D) g;
-                    g.setColor(Color.orange);
-                    g2D.setStroke(new BasicStroke(2.2f));
+                    g.setColor(Color.green);
+                    g2D.setStroke(new BasicStroke(4.2f));
                     g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
                     g.drawLine(p1.x, p1.y, punto.x, punto.y);
                     g.drawLine(p2.x, p2.y, punto.x, punto.y);
-                    
+
                 }
                 //int CordenadaX[] = {110, 390, 690, 115, 520, 310, 710}
                 //int CordenadaY[] = {300, 250, 290, 720, 710, 550, 550}                
                 if (x2 == 690) {
                     System.out.println("    x2:690");
-                    punto1 = new Point(x1+110, y1);
+                    punto1 = new Point(x1 + 110, y1);
                     punto2 = new Point(x2, 380);
                     ty = -(punto1.y - punto2.y) * 1.0;
                     tx = (punto1.x - punto2.x) * 1.0;
@@ -1684,8 +1688,8 @@ public class UPS extends javax.swing.JFrame {
                     p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
 
                     Graphics2D g2D = (Graphics2D) g;
-                    g.setColor(Color.orange);
-                    g2D.setStroke(new BasicStroke(2.2f));
+                    g.setColor(Color.green);
+                    g2D.setStroke(new BasicStroke(4.2f));
                     g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
                     g.drawLine(p1.x, p1.y, punto.x, punto.y);
                     g.drawLine(p2.x, p2.y, punto.x, punto.y);
@@ -1695,8 +1699,8 @@ public class UPS extends javax.swing.JFrame {
                 //int CordenadaY[] = {300, 250, 290, 720, 710, 550, 550}                                
                 if (x2 == 115) {
                     System.out.println("    x2:115");
-                    punto1 = new Point(x1, y1+50);
-                    punto2 = new Point(x2+70, 710);
+                    punto1 = new Point(x1, y1 + 50);
+                    punto2 = new Point(x2 + 70, 710);
                     ty = -(punto1.y - punto2.y) * 1.0;
                     tx = (punto1.x - punto2.x) * 1.0;
                     ang = Math.atan(ty / tx);
@@ -1713,8 +1717,8 @@ public class UPS extends javax.swing.JFrame {
                     p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
 
                     Graphics2D g2D = (Graphics2D) g;
-                    g.setColor(Color.orange);
-                    g2D.setStroke(new BasicStroke(2.2f));
+                    g.setColor(Color.green);
+                    g2D.setStroke(new BasicStroke(4.2f));
                     g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
                     g.drawLine(p1.x, p1.y, punto.x, punto.y);
                     g.drawLine(p2.x, p2.y, punto.x, punto.y);
@@ -1722,9 +1726,9 @@ public class UPS extends javax.swing.JFrame {
                 }
                 //int CordenadaX[] = {110, 390, 690, 115, 520, 310, 710}
                 //int CordenadaY[] = {300, 250, 290, 720, 710, 550, 550}                                                
-                if (x2==520) {
+                if (x2 == 520) {
                     System.out.println("    x2:520");
-                    punto1 = new Point(x1+100, y1+100);
+                    punto1 = new Point(x1 + 100, y1 + 100);
                     punto2 = new Point(x2, 710);
                     ty = -(punto1.y - punto2.y) * 1.0;
                     tx = (punto1.x - punto2.x) * 1.0;
@@ -1742,18 +1746,18 @@ public class UPS extends javax.swing.JFrame {
                     p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
 
                     Graphics2D g2D = (Graphics2D) g;
-                    g.setColor(Color.orange);
-                    g2D.setStroke(new BasicStroke(2.2f));
+                    g.setColor(Color.green);
+                    g2D.setStroke(new BasicStroke(4.2f));
                     g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
                     g.drawLine(p1.x, p1.y, punto.x, punto.y);
                     g.drawLine(p2.x, p2.y, punto.x, punto.y);
                 }
                 //int CordenadaX[] = {110, 390, 690, 115, 520, 310, 710}
                 //int CordenadaY[] = {300, 250, 290, 720, 710, 550, 550}                                                
-                if (x2==710) {
+                if (x2 == 710) {
                     System.out.println("    x2:710");
-                    punto1 = new Point(x1+100, y1+50);
-                    punto2 = new Point(x2, y1+50);
+                    punto1 = new Point(x1 + 100, y1 + 50);
+                    punto2 = new Point(x2, y1 + 50);
                     ty = -(punto1.y - punto2.y) * 1.0;
                     tx = (punto1.x - punto2.x) * 1.0;
                     ang = Math.atan(ty / tx);
@@ -1770,21 +1774,21 @@ public class UPS extends javax.swing.JFrame {
                     p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
 
                     Graphics2D g2D = (Graphics2D) g;
-                    g.setColor(Color.orange);
-                    g2D.setStroke(new BasicStroke(2.2f));
+                    g.setColor(Color.green);
+                    g2D.setStroke(new BasicStroke(4.2f));
                     g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
                     g.drawLine(p1.x, p1.y, punto.x, punto.y);
                     g.drawLine(p2.x, p2.y, punto.x, punto.y);
                 }
                 break;
             case 710:
-                    //int CordenadaX[] = {110, 390, 690, 115, 520, 310, 710}
-                    //int CordenadaY[] = {300, 250, 290, 720, 710, 550, 550}
+                //int CordenadaX[] = {110, 390, 690, 115, 520, 310, 710}
+                //int CordenadaY[] = {300, 250, 290, 720, 710, 550, 550}
                 System.out.println("        x1:710");
                 if (x2 == 110) {
                     System.out.println("    x2:110");
                     punto1 = new Point(x1, y1);
-                    punto2 = new Point(x2+100, 400);
+                    punto2 = new Point(x2 + 100, 400);
                     ty = -(punto1.y - punto2.y) * 1.0;
                     tx = (punto1.x - punto2.x) * 1.0;
                     ang = Math.atan(ty / tx);
@@ -1801,8 +1805,8 @@ public class UPS extends javax.swing.JFrame {
                     p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
 
                     Graphics2D g2D = (Graphics2D) g;
-                    g.setColor(Color.blue);
-                    g2D.setStroke(new BasicStroke(2.2f));
+                    g.setColor(Color.green);
+                    g2D.setStroke(new BasicStroke(4.2f));
                     g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
                     g.drawLine(p1.x, p1.y, punto.x, punto.y);
                     g.drawLine(p2.x, p2.y, punto.x, punto.y);
@@ -1811,8 +1815,8 @@ public class UPS extends javax.swing.JFrame {
                     //int CordenadaX[] = {110, 390, 690, 115, 520, 310, 710}
                     //int CordenadaY[] = {300, 250, 290, 720, 710, 550, 550}
                     System.out.println("    x2:390");
-                    punto1 = new Point(x1+10, y1);
-                    punto2 = new Point(x2+90, 350);
+                    punto1 = new Point(x1 + 10, y1);
+                    punto2 = new Point(x2 + 90, 350);
                     ty = -(punto1.y - punto2.y) * 1.0;
                     tx = (punto1.x - punto2.x) * 1.0;
                     ang = Math.atan(ty / tx);
@@ -1829,19 +1833,19 @@ public class UPS extends javax.swing.JFrame {
                     p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
 
                     Graphics2D g2D = (Graphics2D) g;
-                    g.setColor(Color.blue);
-                    g2D.setStroke(new BasicStroke(2.2f));
+                    g.setColor(Color.green);
+                    g2D.setStroke(new BasicStroke(4.2f));
                     g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
                     g.drawLine(p1.x, p1.y, punto.x, punto.y);
                     g.drawLine(p2.x, p2.y, punto.x, punto.y);
-                    
+
                 }
                 if (x2 == 690) {
                     //int CordenadaX[] = {110, 390, 690, 115, 520, 310, 710}
                     //int CordenadaY[] = {300, 250, 290, 720, 710, 550, 550}
                     System.out.println("    x2:690");
-                    punto1 = new Point(x1+50, y1);
-                    punto2 = new Point(x1+50, 390);
+                    punto1 = new Point(x1 + 50, y1);
+                    punto2 = new Point(x1 + 50, 390);
                     ty = -(punto1.y - punto2.y) * 1.0;
                     tx = (punto1.x - punto2.x) * 1.0;
                     ang = Math.atan(ty / tx);
@@ -1858,19 +1862,19 @@ public class UPS extends javax.swing.JFrame {
                     p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
 
                     Graphics2D g2D = (Graphics2D) g;
-                    g.setColor(Color.blue);
-                    g2D.setStroke(new BasicStroke(2.2f));
+                    g.setColor(Color.green);
+                    g2D.setStroke(new BasicStroke(4.2f));
                     g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
                     g.drawLine(p1.x, p1.y, punto.x, punto.y);
                     g.drawLine(p2.x, p2.y, punto.x, punto.y);
                 }
-                
+
                 if (x2 == 115) {
                     //int CordenadaX[] = {110, 390, 690, 115, 520, 310, 710}
                     //int CordenadaY[] = {300, 250, 290, 720, 710, 550, 550}
-                    System.out.println("    x2:115");                    
-                    punto1 = new Point(x1, y1+90);
-                    punto2 = new Point(x2+100, 740);
+                    System.out.println("    x2:115");
+                    punto1 = new Point(x1, y1 + 90);
+                    punto2 = new Point(x2 + 100, 740);
                     ty = -(punto1.y - punto2.y) * 1.0;
                     tx = (punto1.x - punto2.x) * 1.0;
                     ang = Math.atan(ty / tx);
@@ -1887,18 +1891,18 @@ public class UPS extends javax.swing.JFrame {
                     p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
 
                     Graphics2D g2D = (Graphics2D) g;
-                    g.setColor(Color.blue);
-                    g2D.setStroke(new BasicStroke(2.2f));
+                    g.setColor(Color.green);
+                    g2D.setStroke(new BasicStroke(4.2f));
                     g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
                     g.drawLine(p1.x, p1.y, punto.x, punto.y);
                     g.drawLine(p2.x, p2.y, punto.x, punto.y);
                 }
-                if (x2==520) {
+                if (x2 == 520) {
                     //int CordenadaX[] = {110, 390, 690, 115, 520, 310, 710}
                     //int CordenadaY[] = {300, 250, 290, 720, 710, 550, 550}
                     System.out.println("    x2:520");
-                    punto1 = new Point(x1+50, y1+100);
-                    punto2 = new Point(x2+100, 760);
+                    punto1 = new Point(x1 + 50, y1 + 100);
+                    punto2 = new Point(x2 + 100, 760);
                     ty = -(punto1.y - punto2.y) * 1.0;
                     tx = (punto1.x - punto2.x) * 1.0;
                     ang = Math.atan(ty / tx);
@@ -1915,19 +1919,19 @@ public class UPS extends javax.swing.JFrame {
                     p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
 
                     Graphics2D g2D = (Graphics2D) g;
-                    g.setColor(Color.blue);
-                    g2D.setStroke(new BasicStroke(2.2f));
+                    g.setColor(Color.green);
+                    g2D.setStroke(new BasicStroke(4.2f));
                     g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
                     g.drawLine(p1.x, p1.y, punto.x, punto.y);
                     g.drawLine(p2.x, p2.y, punto.x, punto.y);
                 }
-                
-                if (x2==310) {
+
+                if (x2 == 310) {
                     //int CordenadaX[] = {110, 390, 690, 115, 520, 310, 710}
                     //int CordenadaY[] = {300, 250, 290, 720, 710, 550, 550}
                     System.out.println("    x2:310");
-                    punto1 = new Point(x1+20, y1+50);
-                    punto2 = new Point(x2+100, y1+50);
+                    punto1 = new Point(x1 + 20, y1 + 50);
+                    punto2 = new Point(x2 + 100, y1 + 50);
                     ty = -(punto1.y - punto2.y) * 1.0;
                     tx = (punto1.x - punto2.x) * 1.0;
                     ang = Math.atan(ty / tx);
@@ -1944,15 +1948,15 @@ public class UPS extends javax.swing.JFrame {
                     p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
 
                     Graphics2D g2D = (Graphics2D) g;
-                    g.setColor(Color.blue);
-                    g2D.setStroke(new BasicStroke(2.2f));
+                    g.setColor(Color.green);
+                    g2D.setStroke(new BasicStroke(4.2f));
                     g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
                     g.drawLine(p1.x, p1.y, punto.x, punto.y);
                     g.drawLine(p2.x, p2.y, punto.x, punto.y);
                 }
                 break;
-            }
         }
+    }
 
     private void btn_abrirAgregarCaminoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn_abrirAgregarCaminoMouseClicked
 
@@ -1989,7 +1993,7 @@ public class UPS extends javax.swing.JFrame {
         String dist = distI + "";
         Image planetaIm1;
         int cantidadPla = viaLactea.getInscritos().size();
-        
+
         for (int i = 0; i < viaLactea.getInscritos().size(); i++) {
             for (int j = 0; j < viaLactea.getInscritos().size(); j++) {
                 if (viaLactea.getInscritos().get(i).getEtiqueta().equals(origen)
@@ -2000,11 +2004,11 @@ public class UPS extends javax.swing.JFrame {
         }
         Graphics g = galaxiaModif.getGraphics();
         g.drawImage(galaxiaIm, 0, 0, null);
-        
+
         for (int i = 0; i < viaLactea.getInscritos().size(); i++) {
             for (int j = 0; j < viaLactea.getInscritos().get(i).getAristas().size(); j++) {
-                dibujarConexiones(viaLactea.getInscritos().get(i).getX(), 
-                        viaLactea.getInscritos().get(i).getY(), 
+                dibujarConexiones(viaLactea.getInscritos().get(i).getX(),
+                        viaLactea.getInscritos().get(i).getY(),
                         viaLactea.getInscritos().get(i).getAristas().get(j).getAdyacente().getX(), g);
             }
         }
@@ -2029,7 +2033,7 @@ public class UPS extends javax.swing.JFrame {
         String origen = (String) cmb_origen1.getSelectedItem();
         Image planetaIm1;
         int cantidadPla = viaLactea.getInscritos().size();
-    
+
         for (int i = 0; i < viaLactea.getInscritos().size(); i++) {
             for (int j = 0; j < viaLactea.getInscritos().get(i).getAristas().size(); j++) {
                 cmb_destino1.addItem(viaLactea.getInscritos().get(i).getEtiqueta());
@@ -2048,11 +2052,11 @@ public class UPS extends javax.swing.JFrame {
         }
         Graphics g = galaxiaModif.getGraphics();
         g.drawImage(galaxiaIm, 0, 0, null);
-        
+
         for (int i = 0; i < viaLactea.getInscritos().size(); i++) {
             for (int j = 0; j < viaLactea.getInscritos().get(i).getAristas().size(); j++) {
-                dibujarConexiones(viaLactea.getInscritos().get(i).getX(), 
-                        viaLactea.getInscritos().get(i).getY(), 
+                dibujarConexiones(viaLactea.getInscritos().get(i).getX(),
+                        viaLactea.getInscritos().get(i).getY(),
                         viaLactea.getInscritos().get(i).getAristas().get(j).getAdyacente().getX(), g);
             }
         }
@@ -2062,10 +2066,10 @@ public class UPS extends javax.swing.JFrame {
             g.drawString(viaLactea.getInscritos().get(i).getEtiqueta(), viaLactea.getInscritos().get(i).getX(),
                     viaLactea.getInscritos().get(i).getY() + 115);
         }
-        
+
         Image dimg = ((BufferedImage) galaxiaModif);
         jl_galaxia.setIcon(new ImageIcon(dimg));
-        
+
         cmb_origen1.removeAllItems();
         cmb_destino1.removeAllItems();
         this.jd_eliminarC.dispose();
@@ -2104,7 +2108,7 @@ public class UPS extends javax.swing.JFrame {
         String origen = (String) cmb_origen2.getSelectedItem();
         Image planetaIm1;
         int cantidadPla = viaLactea.getInscritos().size();
-    
+
         //eliminar
         for (int i = 0; i < viaLactea.getInscritos().size(); i++) {
             for (int j = 0; j < viaLactea.getInscritos().get(i).getAristas().size(); j++) {
@@ -2136,11 +2140,11 @@ public class UPS extends javax.swing.JFrame {
 
         Graphics g = galaxiaModif.getGraphics();
         g.drawImage(galaxiaIm, 0, 0, null);
-        
+
         for (int i = 0; i < viaLactea.getInscritos().size(); i++) {
             for (int j = 0; j < viaLactea.getInscritos().get(i).getAristas().size(); j++) {
-                dibujarConexiones(viaLactea.getInscritos().get(i).getX(), 
-                        viaLactea.getInscritos().get(i).getY(), 
+                dibujarConexiones(viaLactea.getInscritos().get(i).getX(),
+                        viaLactea.getInscritos().get(i).getY(),
                         viaLactea.getInscritos().get(i).getAristas().get(j).getAdyacente().getX(), g);
             }
         }
@@ -2150,7 +2154,7 @@ public class UPS extends javax.swing.JFrame {
             g.drawString(viaLactea.getInscritos().get(i).getEtiqueta(), viaLactea.getInscritos().get(i).getX(),
                     viaLactea.getInscritos().get(i).getY() + 115);
         }
-        
+
         Image dimg = ((BufferedImage) galaxiaModif);
         jl_galaxia.setIcon(new ImageIcon(dimg));
 
@@ -2175,31 +2179,30 @@ public class UPS extends javax.swing.JFrame {
 
     private void jt_terminarAgregarPlaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jt_terminarAgregarPlaMouseClicked
         Image planetaIm1;
-        boolean disponible=true;
-        int cordDisponible=0;
+        boolean disponible = true;
+        int cordDisponible = 0;
         CordCont = viaLactea.getInscritos().size();
         for (int i = 0; i < CordenadaX.length; i++) {
             for (int j = 0; j < viaLactea.getInscritos().size(); j++) {
-                if (CordenadaX[i]==viaLactea.getInscritos().get(j).getX()){
-                    disponible=false;
+                if (CordenadaX[i] == viaLactea.getInscritos().get(j).getX()) {
+                    disponible = false;
                 }
                 if (disponible) {
-                    cordDisponible=i;
+                    cordDisponible = i;
                 }
             }
         }
         viaLactea.insert(new Planeta(jt_planetaNuevo.getText(), CordenadaX[cordDisponible], CordenadaY[cordDisponible]));
         CordCont++;
         int cantidadPla = viaLactea.getInscritos().size();
-        
-        
+
         Graphics g = galaxiaModif.getGraphics();
         g.drawImage(galaxiaIm, 0, 0, null);
-        
+
         for (int i = 0; i < viaLactea.getInscritos().size(); i++) {
             for (int j = 0; j < viaLactea.getInscritos().get(i).getAristas().size(); j++) {
-                dibujarConexiones(viaLactea.getInscritos().get(i).getX(), 
-                        viaLactea.getInscritos().get(i).getY(), 
+                dibujarConexiones(viaLactea.getInscritos().get(i).getX(),
+                        viaLactea.getInscritos().get(i).getY(),
                         viaLactea.getInscritos().get(i).getAristas().get(j).getAdyacente().getX(), g);
             }
         }
@@ -2209,10 +2212,9 @@ public class UPS extends javax.swing.JFrame {
             g.drawString(viaLactea.getInscritos().get(i).getEtiqueta(), viaLactea.getInscritos().get(i).getX(),
                     viaLactea.getInscritos().get(i).getY() + 115);
         }
-        
+
         Image dimg = ((BufferedImage) galaxiaModif);
         jl_galaxia.setIcon(new ImageIcon(dimg));
-
 
         jt_planetaNuevo.setText("");
         jd_agregarPla.dispose();
@@ -2263,7 +2265,7 @@ public class UPS extends javax.swing.JFrame {
         String eliminar;
         Image planetaIm1;
         eliminar = (String) cmb_planetasEliminar.getSelectedItem();
-        
+
         for (int i = 0; i < viaLactea.getInscritos().size(); i++) {
             if (viaLactea.getInscritos().get(i).getEtiqueta().equals(eliminar)) {
                 viaLactea.getInscritos().remove(i);
@@ -2280,11 +2282,11 @@ public class UPS extends javax.swing.JFrame {
         int cantidadPla = viaLactea.getInscritos().size();
         Graphics g = galaxiaModif.getGraphics();
         g.drawImage(galaxiaIm, 0, 0, null);
-        
+
         for (int i = 0; i < viaLactea.getInscritos().size(); i++) {
             for (int j = 0; j < viaLactea.getInscritos().get(i).getAristas().size(); j++) {
-                dibujarConexiones(viaLactea.getInscritos().get(i).getX(), 
-                        viaLactea.getInscritos().get(i).getY(), 
+                dibujarConexiones(viaLactea.getInscritos().get(i).getX(),
+                        viaLactea.getInscritos().get(i).getY(),
                         viaLactea.getInscritos().get(i).getAristas().get(j).getAdyacente().getX(), g);
             }
         }
@@ -2294,7 +2296,7 @@ public class UPS extends javax.swing.JFrame {
             g.drawString(viaLactea.getInscritos().get(i).getEtiqueta(), viaLactea.getInscritos().get(i).getX(),
                     viaLactea.getInscritos().get(i).getY() + 115);
         }
-        
+
         Image dimg = ((BufferedImage) galaxiaModif);
         jl_galaxia.setIcon(new ImageIcon(dimg));
         cmb_planetasEliminar.removeAllItems();
@@ -2311,42 +2313,41 @@ public class UPS extends javax.swing.JFrame {
             for (int i = 0; i < viaLactea.getInscritos().size(); i++) {
                 cmb_destino3.addItem(viaLactea.getInscritos().get(i).getEtiqueta());
             }
-            
+
             this.jd_calculador.setLocation(100, 100);
             this.jd_calculador.setModal(true);
             this.jd_calculador.pack();
             this.jd_calculador.setVisible(true);
-        
+
         } else {
             JOptionPane.showMessageDialog(rootPane, "Galaxia Vacia", ":,(", WIDTH, null);
         }
-    
-        
-        
+
+
     }//GEN-LAST:event_btn_abrirCalculadorMouseClicked
 
-    public void dibujarChallenger(int x1,int y1,Graphics g){
-      Image challenger = new ImageIcon(getClass().getResource("challenger2.jpg")).getImage();
-      g.drawImage(challenger, x1-120, y1-10, 120,120, rootPane);
+    public void dibujarChallenger(int x1, int y1, Graphics g) {
+        Image challenger = new ImageIcon(getClass().getResource("challenger2.jpg")).getImage();
+        g.drawImage(challenger, x1 - 120, y1 - 10, 120, 120, rootPane);
     }
-    
+
     private void btn_selecOrigenMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn_selecOrigenMouseClicked
         String origen = (String) cmb_origen3.getSelectedItem();
         Image planetaIm1;
         int cantidadPla = viaLactea.getInscritos().size();
-        
+
         for (int i = 0; i < viaLactea.getInscritos().size(); i++) {
             if (viaLactea.getInscritos().get(i).getEtiqueta().equals(origen)) {
-                    plaOrigen=viaLactea.getInscritos().get(i);
+                plaOrigen = viaLactea.getInscritos().get(i);
             }
         }
         Graphics g = galaxiaModif.getGraphics();
         g.drawImage(galaxiaIm, 0, 0, null);
-        
+
         for (int i = 0; i < viaLactea.getInscritos().size(); i++) {
             for (int j = 0; j < viaLactea.getInscritos().get(i).getAristas().size(); j++) {
-                dibujarConexiones(viaLactea.getInscritos().get(i).getX(), 
-                        viaLactea.getInscritos().get(i).getY(), 
+                dibujarConexiones(viaLactea.getInscritos().get(i).getX(),
+                        viaLactea.getInscritos().get(i).getY(),
                         viaLactea.getInscritos().get(i).getAristas().get(j).getAdyacente().getX(), g);
             }
         }
@@ -2356,46 +2357,1378 @@ public class UPS extends javax.swing.JFrame {
             g.drawString(viaLactea.getInscritos().get(i).getEtiqueta(), viaLactea.getInscritos().get(i).getX(),
                     viaLactea.getInscritos().get(i).getY() + 115);
         }
-        dibujarChallenger(plaOrigen.getX(),plaOrigen.getY(),g);
-        
+        dibujarChallenger(plaOrigen.getX(), plaOrigen.getY(), g);
+        plaOrigen.setDistanciaOptima(0);
+        actual = plaOrigen;
         Image dimg = ((BufferedImage) galaxiaModif);
         jl_galaxia.setIcon(new ImageIcon(dimg));
 
-        
-        
+
     }//GEN-LAST:event_btn_selecOrigenMouseClicked
 
+
     private void btn_selecDestinoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn_selecDestinoMouseClicked
-        String destino = (String) cmb_origen3.getSelectedItem();
-         for (int i = 0; i < viaLactea.getInscritos().size(); i++) {
+        String destino = (String) cmb_destino3.getSelectedItem();
+        for (int i = 0; i < viaLactea.getInscritos().size(); i++) {
             if (viaLactea.getInscritos().get(i).getEtiqueta().equals(destino)) {
-                    plaDestino=viaLactea.getInscritos().get(i);
+                plaDestino = viaLactea.getInscritos().get(i);
             }
         }
-       
+
     }//GEN-LAST:event_btn_selecDestinoMouseClicked
 
-    private void btn_generarCaminoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn_generarCaminoMouseClicked
-        ArrayList<Planeta> explorados=new ArrayList<Planeta>();
-        ArrayList<Planeta> NOexplorados=new ArrayList<Planeta>();
-        ArrayList<Planeta> recorrido=new ArrayList<Planeta>();
-        explorados.add(plaOrigen);
-        int entero1=0,entero2=0;
-        
-        for (int i = 0; i < plaOrigen.getAristas().size(); i++) {
-            entero1= Integer.parseInt(plaOrigen.getAristas().get(i).getDistancia());
-            for (int j = 1; j < plaOrigen.getAristas().size(); j++) {
-                entero2= Integer.parseInt(plaOrigen.getAristas().get(j).getDistancia());
+    public boolean navegable(Planeta a, Planeta b) {
+        boolean navegable = true;
+        boolean ExisteAdyacencia = false;
+        if (a.getAristas().isEmpty()) {
+            navegable = false;
+            JOptionPane.showMessageDialog(rootPane, "NO existen Caminos desde el planeta base: " + a.getEtiqueta());
+
+        }
+        for (int i = 0; i < viaLactea.getInscritos().size(); i++) {
+            for (int j = 0; j < viaLactea.getInscritos().get(i).getAristas().size(); j++) {
+                if (b.getEtiqueta().equals(viaLactea.getInscritos().get(i).getAristas().get(j).getAdyacente().getEtiqueta())) {
+                    ExisteAdyacencia = true;
+                }
             }
         }
-        if (entero1>entero2) {
-            
+        if (!ExisteAdyacencia) {
+            JOptionPane.showMessageDialog(rootPane, "NO existen Caminos que conecten con el planeta: " + b.getEtiqueta());
         }
+        if (ExisteAdyacencia && navegable) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+//String enteroString = Integer.toString(entero);
+/*
+    public void caminoMasCorto(Planeta inicial) {
+        recorrido.add(inicial);
+        cerrada.add(inicial);
+
+        for (int i = 0; i < inicial.getAristas().size(); i++) {
+            inicial.getAristas().get(i).getAdyacente().
+                    setDistanciaOptima((Integer.parseInt(inicial.getAristas().get(i).getDistancia())) + inicial.getDistanciaOptima());
+        }
+
+        /*           if (inicial.getEtiqueta().equals(plaDestino.getEtiqueta())) {
+         Recorridos viaje = new Recorridos(inicial.getDistanciaOptima(), recorrido);
+         caminos.add(viaje);
+         recorrido.clear();
+         } else if (inicial.getAristas().isEmpty()) {
+         Recorridos viaje = new Recorridos(inicial.getDistanciaOptima(), recorrido);
+         caminos.add(viaje);
+         inicial=recorrido.get(recorrido.size()-1);
+         recorrido.clear();
+         }
+         */
+    
+
+    public void establecerDistancias(Planeta a) {
+        if (!a.getAristas().isEmpty()) {
+            for (int i = 0; i < a.getAristas().size(); i++) {
+                a.getAristas().get(i).getAdyacente().setDistanciaOptima((Integer.parseInt(a.getAristas().get(i).getDistancia())) + a.getDistanciaOptima());
+            }
+        }
+    }
+
+    public void algoritmo(ArrayList<String> cadena, ArrayList<Integer> enteros) {
+        if (!recorridoEtiqueta.get(recorridoEtiqueta.size() - 1).equals(plaDestino.getEtiqueta())) {
+            Planeta temp = null;
+            for (Planeta x : viaLactea.getInscritos()) {
+                if (x.getEtiqueta().equals(recorridoEtiqueta.get(recorridoEtiqueta.size() - 1))) {
+                    temp = x;
+                }
+            }
+            if (!temp.getAristas().isEmpty()) {
+                for (Aristas y : temp.getAristas()) {
+                    boolean pasar = true;
+                    for (int i = 0; i < recorridoEtiqueta.size(); i++) {
+                        if (y.getAdyacente().getEtiqueta().equals(recorridoEtiqueta.get(i))) {
+                            pasar = false;
+                        }
+                    }
+                    if (pasar) {
+                        recorridoEtiqueta.add(temp.getEtiqueta());
+         //               recorridoPeso.add(Integer.parseInt(y.getDistancia()));
+                        ArrayList<String> tempE = new ArrayList<String>();
+                        ArrayList<Integer> tempI = new ArrayList<Integer>();
+                        for (int i = 0; i < recorridoEtiqueta.size(); i++) {
+                            tempE.add(recorridoEtiqueta.get(i));
+                        }
+                        for (int i = 0; i < recorridoPeso.size(); i++) {
+                            tempI.add(recorridoPeso.get(i));
+                        }
+                        algoritmo(tempE, tempI);
+                    }
+                }
+            }else
+                for (int i = 0; i < recorridoEtiqueta.size(); i++) {
+                    System.out.println(recorridoEtiqueta.get(i)+" "+recorridoPeso.get(i));
+                }
+                
+        }
+
+    }
+
+
+    private void btn_generarCaminoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn_generarCaminoMouseClicked
+    ArrayList<Planeta> recorrido=new ArrayList<Planeta>();
         
+//********************DIBUJAR CAMINO***********************************
+        Image planetaIm1;
+        int cantidadPla = viaLactea.getInscritos().size();
+
+        String temp = "";
+        Graphics g = galaxiaModif.getGraphics();
+        g.drawImage(galaxiaIm, 0, 0, null);
+
+        for (int i = 0; i < viaLactea.getInscritos().size(); i++) {
+            for (int j = 0; j < viaLactea.getInscritos().get(i).getAristas().size(); j++) {
+                dibujarConexiones(viaLactea.getInscritos().get(i).getX(), viaLactea.getInscritos().get(i).getY(), viaLactea.getInscritos().get(i).getAristas().get(j).getAdyacente().getX(), g);
+            }
+        }
+
+        for (int i = 0; i < recorrido.size(); i++) {
+            for (int j = 0; j < recorrido.get(i).getAristas().size(); j++) {
+                dibujarCaminoMasCorto(recorrido.get(i).getX(), recorrido.get(i).getY(), recorrido.get(i).getAristas().get(j).getAdyacente().getX(), g);
+            }
+        }
+        for (int i = 0; i < cantidadPla; i++) {
+            planetaIm1 = new ImageIcon(getClass().getResource("planeta" + (i + 1) + ".png")).getImage();
+            g.drawImage(planetaIm1, viaLactea.getInscritos().get(i).getX(), viaLactea.getInscritos().get(i).getY(), null);
+            g.drawString(viaLactea.getInscritos().get(i).getEtiqueta(), viaLactea.getInscritos().get(i).getX(),
+                    viaLactea.getInscritos().get(i).getY() + 115);
+        }
+        dibujarChallenger(plaDestino.getX(), plaDestino.getY(), g);
+
+        for (int i = 0; i < recorrido.size(); i++) {
+            if (i == recorrido.size() - 1) {
+                temp += recorrido.get(i).getEtiqueta();
+            } else {
+                temp += recorrido.get(i).getEtiqueta() + " -> ";
+            }
+        }
+        jd_calculador.dispose();
+        JOptionPane.showMessageDialog(rootPane, temp);
+
+        Image dimg = ((BufferedImage) galaxiaModif);
+        jl_galaxia.setIcon(new ImageIcon(dimg));
+
+
     }//GEN-LAST:event_btn_generarCaminoMouseClicked
 
+    public boolean existenPlanetasVsitables(Planeta a, Planeta destino) {
+        boolean existenPlanetasVsitables = true;
+        if (a.getAristas().isEmpty()) {
+            existenPlanetasVsitables = false;
+        }
+        if (a.getEtiqueta().equals(destino.getEtiqueta())) {
+            existenPlanetasVsitables = true;
+        }
+
+        return existenPlanetasVsitables;
+    }
+
+    public boolean explorable(Planeta e, ArrayList<Planeta> array) {
+        boolean explorable = true;
+        for (int i = 0; i < array.size(); i++) {
+            if (e.getEtiqueta().equals(array.get(i).getEtiqueta())) {
+                explorable = false;
+            }
+        }
+        return explorable;
+    }
+
+    public void dibujarCaminoMasCorto(int x1, int y1, int x2, Graphics g) {
+        double ang = 0.0, angSep = 0.0;
+        double tx, ty;
+        int dist = 15;
+        Point punto1 = null, punto2 = null;
+
+        switch (x1) {
+            case 110:
+                System.out.println("        x1:110");
+                if (x2 == 390) {
+                    punto1 = new Point(x1 + 100, y1 + 20);
+                    punto2 = new Point(x2, y1 + 20);
+                    ty = -(punto1.y - punto2.y) * 1.0;
+                    tx = (punto1.x - punto2.x) * 1.0;
+                    ang = Math.atan(ty / tx);
+
+                    if (tx < 0) {
+                        ang += Math.PI;
+                    }
+                    Point p1 = new Point(), p2 = new Point(), punto = punto2;
+                    angSep = 25.0;
+
+                    p1.x = (int) (punto.x + dist * Math.cos(ang - Math.toRadians(angSep)));
+                    p1.y = (int) (punto.y - dist * Math.sin(ang - Math.toRadians(angSep)));
+                    p2.x = (int) (punto.x + dist * Math.cos(ang + Math.toRadians(angSep)));
+                    p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
+
+                    Graphics2D g2D = (Graphics2D) g;
+                    g.setColor(Color.red);
+                    g2D.setStroke(new BasicStroke(4.2f));
+                    g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
+                    g.drawLine(p1.x, p1.y, punto.x, punto.y);
+                    g.drawLine(p2.x, p2.y, punto.x, punto.y);
+                    System.out.println("    x2: 390");
+                }
+                if (x2 == 690) {
+                    punto1 = new Point(x1 + 50, y1 + 50);
+                    punto2 = new Point(x2, y1 + 50);
+                    ty = -(punto1.y - punto2.y) * 1.0;
+                    tx = (punto1.x - punto2.x) * 1.0;
+                    ang = Math.atan(ty / tx);
+
+                    if (tx < 0) {
+                        ang += Math.PI;
+                    }
+                    Point p1 = new Point(), p2 = new Point(), punto = punto2;
+                    angSep = 25.0;
+
+                    p1.x = (int) (punto.x + dist * Math.cos(ang - Math.toRadians(angSep)));
+                    p1.y = (int) (punto.y - dist * Math.sin(ang - Math.toRadians(angSep)));
+                    p2.x = (int) (punto.x + dist * Math.cos(ang + Math.toRadians(angSep)));
+                    p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
+
+                    Graphics2D g2D = (Graphics2D) g;
+                    g.setColor(Color.red);
+                    g2D.setStroke(new BasicStroke(4.2f));
+                    g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
+                    g.drawLine(p1.x, p1.y, punto.x, punto.y);
+                    g.drawLine(p2.x, p2.y, punto.x, punto.y);
+                    System.out.println("    x2: 690");
+                }
+                if (x2 == 115) {
+                    punto1 = new Point(x1 + 50, y1 + 100);
+                    punto2 = new Point(x1 + 50, 720);
+                    ty = -(punto1.y - punto2.y) * 1.0;
+                    tx = (punto1.x - punto2.x) * 1.0;
+                    ang = Math.atan(ty / tx);
+
+                    if (tx < 0) {
+                        ang += Math.PI;
+                    }
+                    Point p1 = new Point(), p2 = new Point(), punto = punto2;
+                    angSep = 25.0;
+
+                    p1.x = (int) (punto.x + dist * Math.cos(ang - Math.toRadians(angSep)));
+                    p1.y = (int) (punto.y - dist * Math.sin(ang - Math.toRadians(angSep)));
+                    p2.x = (int) (punto.x + dist * Math.cos(ang + Math.toRadians(angSep)));
+                    p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
+
+                    Graphics2D g2D = (Graphics2D) g;
+                    g.setColor(Color.red);
+                    g2D.setStroke(new BasicStroke(4.2f));
+                    g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
+                    g.drawLine(p1.x, p1.y, punto.x, punto.y);
+                    g.drawLine(p2.x, p2.y, punto.x, punto.y);
+                    System.out.println("    x2: 115");
+                }
+                if (x2 == 520) {
+                    punto1 = new Point(x1, y1);
+                    punto2 = new Point(x2, 710);
+                    ty = -(punto1.y - punto2.y) * 1.0;
+                    tx = (punto1.x - punto2.x) * 1.0;
+                    ang = Math.atan(ty / tx);
+                    if (tx < 0) {
+                        ang += Math.PI;
+                    }
+                    Point p1 = new Point(), p2 = new Point(), punto = punto2;
+                    angSep = 25.0;
+                    p1.x = (int) (punto.x + dist * Math.cos(ang - Math.toRadians(angSep)));
+                    p1.y = (int) (punto.y - dist * Math.sin(ang - Math.toRadians(angSep)));
+                    p2.x = (int) (punto.x + dist * Math.cos(ang + Math.toRadians(angSep)));
+                    p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
+
+                    Graphics2D g2D = (Graphics2D) g;
+                    g.setColor(Color.red);
+                    g2D.setStroke(new BasicStroke(4.2f));
+                    g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
+                    g.drawLine(p1.x, p1.y, punto.x, punto.y);
+                    g.drawLine(p2.x, p2.y, punto.x, punto.y);
+                    System.out.println("    x2: 520");
+                }
+                if (x2 == 310) {
+                    punto1 = new Point(x1 + 20, y1);
+                    punto2 = new Point(x2, 550);
+                    ty = -(punto1.y - punto2.y) * 1.0;
+                    tx = (punto1.x - punto2.x) * 1.0;
+                    ang = Math.atan(ty / tx);
+
+                    if (tx < 0) {
+                        ang += Math.PI;
+                    }
+                    Point p1 = new Point(), p2 = new Point(), punto = punto2;
+                    angSep = 25.0;
+                    p1.x = (int) (punto.x + dist * Math.cos(ang - Math.toRadians(angSep)));
+                    p1.y = (int) (punto.y - dist * Math.sin(ang - Math.toRadians(angSep)));
+                    p2.x = (int) (punto.x + dist * Math.cos(ang + Math.toRadians(angSep)));
+                    p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
+                    Graphics2D g2D = (Graphics2D) g;
+                    g.setColor(Color.red);
+                    g2D.setStroke(new BasicStroke(4.2f));
+                    g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
+                    g.drawLine(p1.x, p1.y, punto.x, punto.y);
+                    g.drawLine(p2.x, p2.y, punto.x, punto.y);
+                    System.out.println("    x2: 310");
+                }
+                if (x2 == 710) {
+                    punto1 = new Point(x1 + 20, y1 + 20);
+                    punto2 = new Point(x2, 550);
+                    ty = -(punto1.y - punto2.y) * 1.0;
+                    tx = (punto1.x - punto2.x) * 1.0;
+                    ang = Math.atan(ty / tx);
+
+                    if (tx < 0) {
+                        ang += Math.PI;
+                    }
+                    Point p1 = new Point(), p2 = new Point(), punto = punto2;
+                    angSep = 25.0;
+
+                    p1.x = (int) (punto.x + dist * Math.cos(ang - Math.toRadians(angSep)));
+                    p1.y = (int) (punto.y - dist * Math.sin(ang - Math.toRadians(angSep)));
+                    p2.x = (int) (punto.x + dist * Math.cos(ang + Math.toRadians(angSep)));
+                    p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
+
+                    Graphics2D g2D = (Graphics2D) g;
+                    g.setColor(Color.red);
+                    g2D.setStroke(new BasicStroke(4.2f));
+                    g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
+                    g.drawLine(p1.x, p1.y, punto.x, punto.y);
+                    g.drawLine(p2.x, p2.y, punto.x, punto.y);
+                    System.out.println("    x2: 710");
+                }
+                break;
+            case 390:
+                System.out.println("        x1:390");
+//int CordenadaX[] = {110, 390, 690, 115, 520, 310, 710}
+//int CordenadaY[] = {300, 250, 290, 720, 710, 550, 550}
+                if (x2 == 110) {
+                    punto1 = new Point(x1, y1 + 60);
+                    punto2 = new Point(x2 + 100, y1 + 60);
+                    ty = -(punto1.y - punto2.y) * 1.0;
+                    tx = (punto1.x - punto2.x) * 1.0;
+                    ang = Math.atan(ty / tx);
+
+                    if (tx < 0) {
+                        ang += Math.PI;
+                    }
+                    Point p1 = new Point(), p2 = new Point(), punto = punto2;
+                    angSep = 25.0;
+
+                    p1.x = (int) (punto.x + dist * Math.cos(ang - Math.toRadians(angSep)));
+                    p1.y = (int) (punto.y - dist * Math.sin(ang - Math.toRadians(angSep)));
+                    p2.x = (int) (punto.x + dist * Math.cos(ang + Math.toRadians(angSep)));
+                    p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
+
+                    Graphics2D g2D = (Graphics2D) g;
+                    g.setColor(Color.red);
+                    g2D.setStroke(new BasicStroke(4.2f));
+                    g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
+                    g.drawLine(p1.x, p1.y, punto.x, punto.y);
+                    g.drawLine(p2.x, p2.y, punto.x, punto.y);
+                    System.out.println("    x2:110");
+                }
+                if (x2 == 690) {
+                    punto1 = new Point(x1 + 50, y1 + 50);
+                    punto2 = new Point(x2, y1 + 50);
+                    ty = -(punto1.y - punto2.y) * 1.0;
+                    tx = (punto1.x - punto2.x) * 1.0;
+                    ang = Math.atan(ty / tx);
+
+                    if (tx < 0) {
+                        ang += Math.PI;
+                    }
+                    Point p1 = new Point(), p2 = new Point(), punto = punto2;
+                    angSep = 25.0;
+
+                    p1.x = (int) (punto.x + dist * Math.cos(ang - Math.toRadians(angSep)));
+                    p1.y = (int) (punto.y - dist * Math.sin(ang - Math.toRadians(angSep)));
+                    p2.x = (int) (punto.x + dist * Math.cos(ang + Math.toRadians(angSep)));
+                    p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
+
+                    Graphics2D g2D = (Graphics2D) g;
+                    g.setColor(Color.red);
+                    g2D.setStroke(new BasicStroke(4.2f));
+                    g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
+                    g.drawLine(p1.x, p1.y, punto.x, punto.y);
+                    g.drawLine(p2.x, p2.y, punto.x, punto.y);
+                    System.out.println("    x2:690");
+                }
+                if (x2 == 115) {
+                    punto1 = new Point(x1 + 50, y1);
+                    punto2 = new Point(x2 + 90, 720);
+                    ty = -(punto1.y - punto2.y) * 1.0;
+                    tx = (punto1.x - punto2.x) * 1.0;
+                    ang = Math.atan(ty / tx);
+
+                    if (tx < 0) {
+                        ang += Math.PI;
+                    }
+                    Point p1 = new Point(), p2 = new Point(), punto = punto2;
+                    angSep = 25.0;
+
+                    p1.x = (int) (punto.x + dist * Math.cos(ang - Math.toRadians(angSep)));
+                    p1.y = (int) (punto.y - dist * Math.sin(ang - Math.toRadians(angSep)));
+                    p2.x = (int) (punto.x + dist * Math.cos(ang + Math.toRadians(angSep)));
+                    p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
+
+                    Graphics2D g2D = (Graphics2D) g;
+                    g.setColor(Color.red);
+                    g2D.setStroke(new BasicStroke(4.2f));
+                    g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
+                    g.drawLine(p1.x, p1.y, punto.x, punto.y);
+                    g.drawLine(p2.x, p2.y, punto.x, punto.y);
+                    System.out.println("    x2:115");
+                }
+                if (x2 == 520) {
+                    punto1 = new Point(x1 + 50, y1 + 5);
+                    punto2 = new Point(x2 + 50, 710);
+                    ty = -(punto1.y - punto2.y) * 1.0;
+                    tx = (punto1.x - punto2.x) * 1.0;
+                    ang = Math.atan(ty / tx);
+
+                    if (tx < 0) {
+                        ang += Math.PI;
+                    }
+                    Point p1 = new Point(), p2 = new Point(), punto = punto2;
+                    angSep = 25.0;
+
+                    p1.x = (int) (punto.x + dist * Math.cos(ang - Math.toRadians(angSep)));
+                    p1.y = (int) (punto.y - dist * Math.sin(ang - Math.toRadians(angSep)));
+                    p2.x = (int) (punto.x + dist * Math.cos(ang + Math.toRadians(angSep)));
+                    p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
+
+                    Graphics2D g2D = (Graphics2D) g;
+                    g.setColor(Color.red);
+                    g2D.setStroke(new BasicStroke(4.2f));
+                    g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
+                    g.drawLine(p1.x, p1.y, punto.x, punto.y);
+                    g.drawLine(p2.x, p2.y, punto.x, punto.y);
+                    System.out.println("    x2:520");
+                }
+                if (x2 == 310) {
+                    punto1 = new Point(x1 + 50, y1 + 50);
+                    punto2 = new Point(x2 + 50, 550);
+                    ty = -(punto1.y - punto2.y) * 1.0;
+                    tx = (punto1.x - punto2.x) * 1.0;
+                    ang = Math.atan(ty / tx);
+
+                    if (tx < 0) {
+                        ang += Math.PI;
+                    }
+                    Point p1 = new Point(), p2 = new Point(), punto = punto2;
+                    angSep = 25.0;
+
+                    p1.x = (int) (punto.x + dist * Math.cos(ang - Math.toRadians(angSep)));
+                    p1.y = (int) (punto.y - dist * Math.sin(ang - Math.toRadians(angSep)));
+                    p2.x = (int) (punto.x + dist * Math.cos(ang + Math.toRadians(angSep)));
+                    p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
+
+                    Graphics2D g2D = (Graphics2D) g;
+                    g.setColor(Color.red);
+                    g2D.setStroke(new BasicStroke(4.2f));
+                    g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
+                    g.drawLine(p1.x, p1.y, punto.x, punto.y);
+                    g.drawLine(p2.x, p2.y, punto.x, punto.y);
+                    System.out.println("    x2:310");
+                }
+                if (x2 == 710) {
+                    punto1 = new Point(x1 + 20, y1 + 20);
+                    punto2 = new Point(x2, 550);
+                    ty = -(punto1.y - punto2.y) * 1.0;
+                    tx = (punto1.x - punto2.x) * 1.0;
+                    ang = Math.atan(ty / tx);
+
+                    if (tx < 0) {
+                        ang += Math.PI;
+                    }
+                    Point p1 = new Point(), p2 = new Point(), punto = punto2;
+                    angSep = 25.0;
+
+                    p1.x = (int) (punto.x + dist * Math.cos(ang - Math.toRadians(angSep)));
+                    p1.y = (int) (punto.y - dist * Math.sin(ang - Math.toRadians(angSep)));
+                    p2.x = (int) (punto.x + dist * Math.cos(ang + Math.toRadians(angSep)));
+                    p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
+
+                    Graphics2D g2D = (Graphics2D) g;
+                    g.setColor(Color.red);
+                    g2D.setStroke(new BasicStroke(4.2f));
+                    g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
+                    g.drawLine(p1.x, p1.y, punto.x, punto.y);
+                    g.drawLine(p2.x, p2.y, punto.x, punto.y);
+                    System.out.println("    x2:710");
+                }
+                break;
+            case 690:
+                System.out.println("        x1:690");
+//int CordenadaX[] = {110, 390, 690, 115, 520, 310, 710}
+//int CordenadaY[] = {300, 250, 290, 720, 710, 550, 550}
+                if (x2 == 110) {
+                    punto1 = new Point(x1, y1 + 60);
+                    punto2 = new Point(x2 + 100, y1 + 60);
+                    ty = -(punto1.y - punto2.y) * 1.0;
+                    tx = (punto1.x - punto2.x) * 1.0;
+                    ang = Math.atan(ty / tx);
+
+                    if (tx < 0) {
+                        ang += Math.PI;
+                    }
+                    Point p1 = new Point(), p2 = new Point(), punto = punto2;
+                    angSep = 25.0;
+
+                    p1.x = (int) (punto.x + dist * Math.cos(ang - Math.toRadians(angSep)));
+                    p1.y = (int) (punto.y - dist * Math.sin(ang - Math.toRadians(angSep)));
+                    p2.x = (int) (punto.x + dist * Math.cos(ang + Math.toRadians(angSep)));
+                    p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
+
+                    Graphics2D g2D = (Graphics2D) g;
+                    g.setColor(Color.red);
+                    g2D.setStroke(new BasicStroke(4.2f));
+                    g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
+                    g.drawLine(p1.x, p1.y, punto.x, punto.y);
+                    g.drawLine(p2.x, p2.y, punto.x, punto.y);
+                    System.out.println("    x2:110");
+                }
+                if (x2 == 390) {
+                    punto1 = new Point(x1 + 50, y1 + 40);
+                    punto2 = new Point(x2 + 100, y1 + 40);
+                    ty = -(punto1.y - punto2.y) * 1.0;
+                    tx = (punto1.x - punto2.x) * 1.0;
+                    ang = Math.atan(ty / tx);
+
+                    if (tx < 0) {
+                        ang += Math.PI;
+                    }
+                    Point p1 = new Point(), p2 = new Point(), punto = punto2;
+                    angSep = 25.0;
+
+                    p1.x = (int) (punto.x + dist * Math.cos(ang - Math.toRadians(angSep)));
+                    p1.y = (int) (punto.y - dist * Math.sin(ang - Math.toRadians(angSep)));
+                    p2.x = (int) (punto.x + dist * Math.cos(ang + Math.toRadians(angSep)));
+                    p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
+
+                    Graphics2D g2D = (Graphics2D) g;
+                    g.setColor(Color.red);
+                    g2D.setStroke(new BasicStroke(4.2f));
+                    g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
+                    g.drawLine(p1.x, p1.y, punto.x, punto.y);
+                    g.drawLine(p2.x, p2.y, punto.x, punto.y);
+
+                    System.out.println("    x2:390");
+                }
+                if (x2 == 115) {
+                    punto1 = new Point(x1 + 50, y1);
+                    punto2 = new Point(x2 + 90, 720);
+                    ty = -(punto1.y - punto2.y) * 1.0;
+                    tx = (punto1.x - punto2.x) * 1.0;
+                    ang = Math.atan(ty / tx);
+
+                    if (tx < 0) {
+                        ang += Math.PI;
+                    }
+                    Point p1 = new Point(), p2 = new Point(), punto = punto2;
+                    angSep = 25.0;
+
+                    p1.x = (int) (punto.x + dist * Math.cos(ang - Math.toRadians(angSep)));
+                    p1.y = (int) (punto.y - dist * Math.sin(ang - Math.toRadians(angSep)));
+                    p2.x = (int) (punto.x + dist * Math.cos(ang + Math.toRadians(angSep)));
+                    p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
+
+                    Graphics2D g2D = (Graphics2D) g;
+                    g.setColor(Color.red);
+                    g2D.setStroke(new BasicStroke(4.2f));
+                    g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
+                    g.drawLine(p1.x, p1.y, punto.x, punto.y);
+                    g.drawLine(p2.x, p2.y, punto.x, punto.y);
+
+                    System.out.println("    x2:115");
+                }
+                if (x2 == 520) {
+                    punto1 = new Point(x1 + 50, y1 + 5);
+                    punto2 = new Point(x2 + 50, 710);
+                    ty = -(punto1.y - punto2.y) * 1.0;
+                    tx = (punto1.x - punto2.x) * 1.0;
+                    ang = Math.atan(ty / tx);
+
+                    if (tx < 0) {
+                        ang += Math.PI;
+                    }
+                    Point p1 = new Point(), p2 = new Point(), punto = punto2;
+                    angSep = 25.0;
+
+                    p1.x = (int) (punto.x + dist * Math.cos(ang - Math.toRadians(angSep)));
+                    p1.y = (int) (punto.y - dist * Math.sin(ang - Math.toRadians(angSep)));
+                    p2.x = (int) (punto.x + dist * Math.cos(ang + Math.toRadians(angSep)));
+                    p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
+
+                    Graphics2D g2D = (Graphics2D) g;
+                    g.setColor(Color.red);
+                    g2D.setStroke(new BasicStroke(4.2f));
+                    g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
+                    g.drawLine(p1.x, p1.y, punto.x, punto.y);
+                    g.drawLine(p2.x, p2.y, punto.x, punto.y);
+                    System.out.println("    x2:520");
+                }
+                if (x2 == 310) {
+                    punto1 = new Point(x1 + 50, y1 + 50);
+                    punto2 = new Point(x2 + 130, 545);
+                    ty = -(punto1.y - punto2.y) * 1.0;
+                    tx = (punto1.x - punto2.x) * 1.0;
+                    ang = Math.atan(ty / tx);
+
+                    if (tx < 0) {
+                        ang += Math.PI;
+                    }
+                    Point p1 = new Point(), p2 = new Point(), punto = punto2;
+                    angSep = 25.0;
+
+                    p1.x = (int) (punto.x + dist * Math.cos(ang - Math.toRadians(angSep)));
+                    p1.y = (int) (punto.y - dist * Math.sin(ang - Math.toRadians(angSep)));
+                    p2.x = (int) (punto.x + dist * Math.cos(ang + Math.toRadians(angSep)));
+                    p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
+
+                    Graphics2D g2D = (Graphics2D) g;
+                    g.setColor(Color.red);
+                    g2D.setStroke(new BasicStroke(4.2f));
+                    g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
+                    g.drawLine(p1.x, p1.y, punto.x, punto.y);
+                    g.drawLine(p2.x, p2.y, punto.x, punto.y);
+                    System.out.println("    x2:310");
+                }
+                if (x2 == 710) {
+                    punto1 = new Point(x1 + 40, y1 + 20);
+                    punto2 = new Point(x2 + 20, 550);
+                    ty = -(punto1.y - punto2.y) * 1.0;
+                    tx = (punto1.x - punto2.x) * 1.0;
+                    ang = Math.atan(ty / tx);
+
+                    if (tx < 0) {
+                        ang += Math.PI;
+                    }
+                    Point p1 = new Point(), p2 = new Point(), punto = punto2;
+                    angSep = 25.0;
+
+                    p1.x = (int) (punto.x + dist * Math.cos(ang - Math.toRadians(angSep)));
+                    p1.y = (int) (punto.y - dist * Math.sin(ang - Math.toRadians(angSep)));
+                    p2.x = (int) (punto.x + dist * Math.cos(ang + Math.toRadians(angSep)));
+                    p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
+
+                    Graphics2D g2D = (Graphics2D) g;
+                    g.setColor(Color.red);
+                    g2D.setStroke(new BasicStroke(4.2f));
+                    g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
+                    g.drawLine(p1.x, p1.y, punto.x, punto.y);
+                    g.drawLine(p2.x, p2.y, punto.x, punto.y);
+                    System.out.println("    x2:710");
+                }
+                break;
+            case 115:
+                System.out.println("        x1:115");
+//int CordenadaX[] = {110, 390, 690, 115, 520, 310, 710}
+//int CordenadaY[] = {300, 250, 290, 720, 710, 550, 550}
+                if (x2 == 110) {
+                    punto1 = new Point(x1 + 50, y1 + 20);
+                    punto2 = new Point(x2 + 70, 400);
+                    ty = -(punto1.y - punto2.y) * 1.0;
+                    tx = (punto1.x - punto2.x) * 1.0;
+                    ang = Math.atan(ty / tx);
+
+                    if (tx < 0) {
+                        ang += Math.PI;
+                    }
+                    Point p1 = new Point(), p2 = new Point(), punto = punto2;
+                    angSep = 25.0;
+
+                    p1.x = (int) (punto.x + dist * Math.cos(ang - Math.toRadians(angSep)));
+                    p1.y = (int) (punto.y - dist * Math.sin(ang - Math.toRadians(angSep)));
+                    p2.x = (int) (punto.x + dist * Math.cos(ang + Math.toRadians(angSep)));
+                    p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
+
+                    Graphics2D g2D = (Graphics2D) g;
+                    g.setColor(Color.red);
+                    g2D.setStroke(new BasicStroke(4.2f));
+                    g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
+                    g.drawLine(p1.x, p1.y, punto.x, punto.y);
+                    g.drawLine(p2.x, p2.y, punto.x, punto.y);
+                    System.out.println("    x2:110");
+                }
+                //int CordenadaX[] = {110, 390, 690, 115, 520, 310, 710, 970, 1020, 1200};
+                //int CordenadaY[] = {300, 250, 290, 720, 710, 550, 550, 250, 720, 520};
+                if (x2 == 390) {
+                    punto1 = new Point(x1 + 50, y1 + 50);
+                    punto2 = new Point(x2, 350);
+                    ty = -(punto1.y - punto2.y) * 1.0;
+                    tx = (punto1.x - punto2.x) * 1.0;
+                    ang = Math.atan(ty / tx);
+
+                    if (tx < 0) {
+                        ang += Math.PI;
+                    }
+                    Point p1 = new Point(), p2 = new Point(), punto = punto2;
+                    angSep = 25.0;
+
+                    p1.x = (int) (punto.x + dist * Math.cos(ang - Math.toRadians(angSep)));
+                    p1.y = (int) (punto.y - dist * Math.sin(ang - Math.toRadians(angSep)));
+                    p2.x = (int) (punto.x + dist * Math.cos(ang + Math.toRadians(angSep)));
+                    p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
+
+                    Graphics2D g2D = (Graphics2D) g;
+                    g.setColor(Color.red);
+                    g2D.setStroke(new BasicStroke(4.2f));
+                    g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
+                    g.drawLine(p1.x, p1.y, punto.x, punto.y);
+                    g.drawLine(p2.x, p2.y, punto.x, punto.y);
+
+                    System.out.println("    x2:390");
+                }
+                //int CordenadaX[] = {110, 390, 690, 115, 520, 310, 710, 970, 1020, 1200};
+                //int CordenadaY[] = {300, 250, 290, 720, 710, 550, 550, 250, 720, 520};
+                if (x2 == 690) {
+                    punto1 = new Point(x1 + 50, y1 + 50);
+                    punto2 = new Point(x2, 390);
+                    ty = -(punto1.y - punto2.y) * 1.0;
+                    tx = (punto1.x - punto2.x) * 1.0;
+                    ang = Math.atan(ty / tx);
+
+                    if (tx < 0) {
+                        ang += Math.PI;
+                    }
+                    Point p1 = new Point(), p2 = new Point(), punto = punto2;
+                    angSep = 25.0;
+
+                    p1.x = (int) (punto.x + dist * Math.cos(ang - Math.toRadians(angSep)));
+                    p1.y = (int) (punto.y - dist * Math.sin(ang - Math.toRadians(angSep)));
+                    p2.x = (int) (punto.x + dist * Math.cos(ang + Math.toRadians(angSep)));
+                    p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
+
+                    Graphics2D g2D = (Graphics2D) g;
+                    g.setColor(Color.red);
+                    g2D.setStroke(new BasicStroke(4.2f));
+                    g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
+                    g.drawLine(p1.x, p1.y, punto.x, punto.y);
+                    g.drawLine(p2.x, p2.y, punto.x, punto.y);
+
+                    System.out.println("    x2:690");
+                }
+                //int CordenadaX[] = {110, 390, 690, 115, 520, 310, 710, 970, 1020, 1200};
+                //int CordenadaY[] = {300, 250, 290, 720, 710, 550, 550, 250, 720, 520};
+                if (x2 == 520) {
+                    punto1 = new Point(x1 + 100, y1 + 30);
+                    punto2 = new Point(x2, y1 + 30);
+                    ty = -(punto1.y - punto2.y) * 1.0;
+                    tx = (punto1.x - punto2.x) * 1.0;
+                    ang = Math.atan(ty / tx);
+
+                    if (tx < 0) {
+                        ang += Math.PI;
+                    }
+                    Point p1 = new Point(), p2 = new Point(), punto = punto2;
+                    angSep = 25.0;
+
+                    p1.x = (int) (punto.x + dist * Math.cos(ang - Math.toRadians(angSep)));
+                    p1.y = (int) (punto.y - dist * Math.sin(ang - Math.toRadians(angSep)));
+                    p2.x = (int) (punto.x + dist * Math.cos(ang + Math.toRadians(angSep)));
+                    p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
+
+                    Graphics2D g2D = (Graphics2D) g;
+                    g.setColor(Color.red);
+                    g2D.setStroke(new BasicStroke(4.2f));
+                    g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
+                    g.drawLine(p1.x, p1.y, punto.x, punto.y);
+                    g.drawLine(p2.x, p2.y, punto.x, punto.y);
+                    System.out.println("    x2:520");
+                }
+                //int CordenadaX[] = {110, 390, 690, 115, 520, 310, 710, 970, 1020, 1200};
+                //int CordenadaY[] = {300, 250, 290, 720, 710, 550, 550, 250, 720, 520};
+                if (x2 == 310) {
+                    punto1 = new Point(x1 + 50, y1);
+                    punto2 = new Point(x2, 570);
+                    ty = -(punto1.y - punto2.y) * 1.0;
+                    tx = (punto1.x - punto2.x) * 1.0;
+                    ang = Math.atan(ty / tx);
+
+                    if (tx < 0) {
+                        ang += Math.PI;
+                    }
+                    Point p1 = new Point(), p2 = new Point(), punto = punto2;
+                    angSep = 25.0;
+
+                    p1.x = (int) (punto.x + dist * Math.cos(ang - Math.toRadians(angSep)));
+                    p1.y = (int) (punto.y - dist * Math.sin(ang - Math.toRadians(angSep)));
+                    p2.x = (int) (punto.x + dist * Math.cos(ang + Math.toRadians(angSep)));
+                    p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
+
+                    Graphics2D g2D = (Graphics2D) g;
+                    g.setColor(Color.red);
+                    g2D.setStroke(new BasicStroke(4.2f));
+                    g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
+                    g.drawLine(p1.x, p1.y, punto.x, punto.y);
+                    g.drawLine(p2.x, p2.y, punto.x, punto.y);
+                    System.out.println("    x2:310");
+                }
+                //int CordenadaX[] = {110, 390, 690, 115, 520, 310, 710, 970, 1020, 1200};
+                //int CordenadaY[] = {300, 250, 290, 720, 710, 550, 550, 250, 720, 520};
+                if (x2 == 710) {
+                    punto1 = new Point(x1 + 100, y1 + 40);
+                    punto2 = new Point(x2, 550 + 50);
+                    ty = -(punto1.y - punto2.y) * 1.0;
+                    tx = (punto1.x - punto2.x) * 1.0;
+                    ang = Math.atan(ty / tx);
+
+                    if (tx < 0) {
+                        ang += Math.PI;
+                    }
+                    Point p1 = new Point(), p2 = new Point(), punto = punto2;
+                    angSep = 25.0;
+
+                    p1.x = (int) (punto.x + dist * Math.cos(ang - Math.toRadians(angSep)));
+                    p1.y = (int) (punto.y - dist * Math.sin(ang - Math.toRadians(angSep)));
+                    p2.x = (int) (punto.x + dist * Math.cos(ang + Math.toRadians(angSep)));
+                    p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
+
+                    Graphics2D g2D = (Graphics2D) g;
+                    g.setColor(Color.red);
+                    g2D.setStroke(new BasicStroke(4.2f));
+                    g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
+                    g.drawLine(p1.x, p1.y, punto.x, punto.y);
+                    g.drawLine(p2.x, p2.y, punto.x, punto.y);
+                    System.out.println("    x2:710");
+                }
+                break;
+            case 520:
+                System.out.println("        x1:520");
+                //int CordenadaX[] = {110, 390, 690, 115, 520, 310, 710, 970, 1020, 1200};
+                //int CordenadaY[] = {300, 250, 290, 720, 710, 550, 550, 250, 720, 520};
+                if (x2 == 110) {
+                    System.out.println("    x2:110");
+                    punto1 = new Point(x1, y1);
+                    punto2 = new Point(x2 + 100, 400);
+                    ty = -(punto1.y - punto2.y) * 1.0;
+                    tx = (punto1.x - punto2.x) * 1.0;
+                    ang = Math.atan(ty / tx);
+
+                    if (tx < 0) {
+                        ang += Math.PI;
+                    }
+                    Point p1 = new Point(), p2 = new Point(), punto = punto2;
+                    angSep = 25.0;
+
+                    p1.x = (int) (punto.x + dist * Math.cos(ang - Math.toRadians(angSep)));
+                    p1.y = (int) (punto.y - dist * Math.sin(ang - Math.toRadians(angSep)));
+                    p2.x = (int) (punto.x + dist * Math.cos(ang + Math.toRadians(angSep)));
+                    p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
+
+                    Graphics2D g2D = (Graphics2D) g;
+                    g.setColor(Color.red);
+                    g2D.setStroke(new BasicStroke(4.2f));
+                    g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
+                    g.drawLine(p1.x, p1.y, punto.x, punto.y);
+                    g.drawLine(p2.x, p2.y, punto.x, punto.y);
+                }
+                //int CordenadaX[] = {110, 390, 690, 115, 520, 310, 710, 970, 1020, 1200};
+                //int CordenadaY[] = {300, 250, 290, 720, 710, 550, 550, 250, 720, 520};
+                if (x2 == 390) {
+                    System.out.println("    x2:390");
+                    punto1 = new Point(x1, y1);
+                    punto2 = new Point(x2 + 80, 350);
+                    ty = -(punto1.y - punto2.y) * 1.0;
+                    tx = (punto1.x - punto2.x) * 1.0;
+                    ang = Math.atan(ty / tx);
+
+                    if (tx < 0) {
+                        ang += Math.PI;
+                    }
+                    Point p1 = new Point(), p2 = new Point(), punto = punto2;
+                    angSep = 25.0;
+
+                    p1.x = (int) (punto.x + dist * Math.cos(ang - Math.toRadians(angSep)));
+                    p1.y = (int) (punto.y - dist * Math.sin(ang - Math.toRadians(angSep)));
+                    p2.x = (int) (punto.x + dist * Math.cos(ang + Math.toRadians(angSep)));
+                    p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
+
+                    Graphics2D g2D = (Graphics2D) g;
+                    g.setColor(Color.red);
+                    g2D.setStroke(new BasicStroke(4.2f));
+                    g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
+                    g.drawLine(p1.x, p1.y, punto.x, punto.y);
+                    g.drawLine(p2.x, p2.y, punto.x, punto.y);
+
+                }
+                //int CordenadaX[] = {110, 390, 690, 115, 520, 310, 710, 970, 1020, 1200};
+                //int CordenadaY[] = {300, 250, 290, 720, 710, 550, 550, 250, 720, 520};
+                if (x2 == 690) {
+                    System.out.println("    x2:690");
+                    punto1 = new Point(x1 + 100, y1);
+                    punto2 = new Point(x2 + 20, 390);
+                    ty = -(punto1.y - punto2.y) * 1.0;
+                    tx = (punto1.x - punto2.x) * 1.0;
+                    ang = Math.atan(ty / tx);
+
+                    if (tx < 0) {
+                        ang += Math.PI;
+                    }
+                    Point p1 = new Point(), p2 = new Point(), punto = punto2;
+                    angSep = 25.0;
+
+                    p1.x = (int) (punto.x + dist * Math.cos(ang - Math.toRadians(angSep)));
+                    p1.y = (int) (punto.y - dist * Math.sin(ang - Math.toRadians(angSep)));
+                    p2.x = (int) (punto.x + dist * Math.cos(ang + Math.toRadians(angSep)));
+                    p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
+
+                    Graphics2D g2D = (Graphics2D) g;
+                    g.setColor(Color.red);
+                    g2D.setStroke(new BasicStroke(4.2f));
+                    g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
+                    g.drawLine(p1.x, p1.y, punto.x, punto.y);
+                    g.drawLine(p2.x, p2.y, punto.x, punto.y);
+
+                }
+                //int CordenadaX[] = {110, 390, 690, 115, 520, 310, 710, 970, 1020, 1200};
+                //int CordenadaY[] = {300, 250, 290, 720, 710, 550, 550, 250, 720, 520};                
+                if (x2 == 115) {
+                    System.out.println("    x2:115");
+                    punto1 = new Point(x1, y1 + 50);
+                    punto2 = new Point(x2 + 100, y1 + 50);
+                    ty = -(punto1.y - punto2.y) * 1.0;
+                    tx = (punto1.x - punto2.x) * 1.0;
+                    ang = Math.atan(ty / tx);
+
+                    if (tx < 0) {
+                        ang += Math.PI;
+                    }
+                    Point p1 = new Point(), p2 = new Point(), punto = punto2;
+                    angSep = 25.0;
+
+                    p1.x = (int) (punto.x + dist * Math.cos(ang - Math.toRadians(angSep)));
+                    p1.y = (int) (punto.y - dist * Math.sin(ang - Math.toRadians(angSep)));
+                    p2.x = (int) (punto.x + dist * Math.cos(ang + Math.toRadians(angSep)));
+                    p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
+
+                    Graphics2D g2D = (Graphics2D) g;
+                    g.setColor(Color.red);
+                    g2D.setStroke(new BasicStroke(4.2f));
+                    g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
+                    g.drawLine(p1.x, p1.y, punto.x, punto.y);
+                    g.drawLine(p2.x, p2.y, punto.x, punto.y);
+
+                }
+                //int CordenadaX[] = {110, 390, 690, 115, 520, 310, 710, 970, 1020, 1200};
+                //int CordenadaY[] = {300, 250, 290, 720, 710, 550, 550, 250, 720, 520};                                
+                if (x2 == 310) {
+                    System.out.println("    x2:310");
+                    punto1 = new Point(x1 + 15, y1);
+                    punto2 = new Point(x2 + 100, 650);
+                    ty = -(punto1.y - punto2.y) * 1.0;
+                    tx = (punto1.x - punto2.x) * 1.0;
+                    ang = Math.atan(ty / tx);
+
+                    if (tx < 0) {
+                        ang += Math.PI;
+                    }
+                    Point p1 = new Point(), p2 = new Point(), punto = punto2;
+                    angSep = 25.0;
+
+                    p1.x = (int) (punto.x + dist * Math.cos(ang - Math.toRadians(angSep)));
+                    p1.y = (int) (punto.y - dist * Math.sin(ang - Math.toRadians(angSep)));
+                    p2.x = (int) (punto.x + dist * Math.cos(ang + Math.toRadians(angSep)));
+                    p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
+
+                    Graphics2D g2D = (Graphics2D) g;
+                    g.setColor(Color.red);
+                    g2D.setStroke(new BasicStroke(4.2f));
+                    g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
+                    g.drawLine(p1.x, p1.y, punto.x, punto.y);
+                    g.drawLine(p2.x, p2.y, punto.x, punto.y);
+
+                }
+                //int CordenadaX[] = {110, 390, 690, 115, 520, 310, 710}
+                //int CordenadaY[] = {300, 250, 290, 720, 710, 550, 550}
+                if (x2 == 710) {
+                    System.out.println("    x2:710");
+                    punto1 = new Point(x1 + 90, y1);
+                    punto2 = new Point(x2, 650);
+                    ty = -(punto1.y - punto2.y) * 1.0;
+                    tx = (punto1.x - punto2.x) * 1.0;
+                    ang = Math.atan(ty / tx);
+
+                    if (tx < 0) {
+                        ang += Math.PI;
+                    }
+                    Point p1 = new Point(), p2 = new Point(), punto = punto2;
+                    angSep = 25.0;
+
+                    p1.x = (int) (punto.x + dist * Math.cos(ang - Math.toRadians(angSep)));
+                    p1.y = (int) (punto.y - dist * Math.sin(ang - Math.toRadians(angSep)));
+                    p2.x = (int) (punto.x + dist * Math.cos(ang + Math.toRadians(angSep)));
+                    p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
+
+                    Graphics2D g2D = (Graphics2D) g;
+                    g.setColor(Color.red);
+                    g2D.setStroke(new BasicStroke(4.2f));
+                    g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
+                    g.drawLine(p1.x, p1.y, punto.x, punto.y);
+                    g.drawLine(p2.x, p2.y, punto.x, punto.y);
+                    System.out.println("entro al 710");
+                }
+                break;
+            case 310:
+//int CordenadaX[] = {110, 390, 690, 115, 520, 310, 710}
+//int CordenadaY[] = {300, 250, 290, 720, 710, 550, 550}
+                System.out.println("        x1:310");
+                if (x2 == 110) {
+                    System.out.println("    x2:110");
+                    punto1 = new Point(x1, y1);
+                    punto2 = new Point(x2 + 90, 400);
+                    ty = -(punto1.y - punto2.y) * 1.0;
+                    tx = (punto1.x - punto2.x) * 1.0;
+                    ang = Math.atan(ty / tx);
+
+                    if (tx < 0) {
+                        ang += Math.PI;
+                    }
+                    Point p1 = new Point(), p2 = new Point(), punto = punto2;
+                    angSep = 25.0;
+
+                    p1.x = (int) (punto.x + dist * Math.cos(ang - Math.toRadians(angSep)));
+                    p1.y = (int) (punto.y - dist * Math.sin(ang - Math.toRadians(angSep)));
+                    p2.x = (int) (punto.x + dist * Math.cos(ang + Math.toRadians(angSep)));
+                    p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
+
+                    Graphics2D g2D = (Graphics2D) g;
+                    g.setColor(Color.red);
+                    g2D.setStroke(new BasicStroke(4.2f));
+                    g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
+                    g.drawLine(p1.x, p1.y, punto.x, punto.y);
+                    g.drawLine(p2.x, p2.y, punto.x, punto.y);
+                }
+                //int CordenadaX[] = {110, 390, 690, 115, 520, 310, 710}
+                //int CordenadaY[] = {300, 250, 290, 720, 710, 550, 550}
+                if (x2 == 390) {
+                    System.out.println("    x2:390");
+                    punto1 = new Point(x1 + 50, y1);
+                    punto2 = new Point(x2 + 90, 350);
+                    ty = -(punto1.y - punto2.y) * 1.0;
+                    tx = (punto1.x - punto2.x) * 1.0;
+                    ang = Math.atan(ty / tx);
+
+                    if (tx < 0) {
+                        ang += Math.PI;
+                    }
+                    Point p1 = new Point(), p2 = new Point(), punto = punto2;
+                    angSep = 25.0;
+
+                    p1.x = (int) (punto.x + dist * Math.cos(ang - Math.toRadians(angSep)));
+                    p1.y = (int) (punto.y - dist * Math.sin(ang - Math.toRadians(angSep)));
+                    p2.x = (int) (punto.x + dist * Math.cos(ang + Math.toRadians(angSep)));
+                    p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
+
+                    Graphics2D g2D = (Graphics2D) g;
+                    g.setColor(Color.red);
+                    g2D.setStroke(new BasicStroke(4.2f));
+                    g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
+                    g.drawLine(p1.x, p1.y, punto.x, punto.y);
+                    g.drawLine(p2.x, p2.y, punto.x, punto.y);
+
+                }
+                //int CordenadaX[] = {110, 390, 690, 115, 520, 310, 710}
+                //int CordenadaY[] = {300, 250, 290, 720, 710, 550, 550}                
+                if (x2 == 690) {
+                    System.out.println("    x2:690");
+                    punto1 = new Point(x1 + 110, y1);
+                    punto2 = new Point(x2, 380);
+                    ty = -(punto1.y - punto2.y) * 1.0;
+                    tx = (punto1.x - punto2.x) * 1.0;
+                    ang = Math.atan(ty / tx);
+
+                    if (tx < 0) {
+                        ang += Math.PI;
+                    }
+                    Point p1 = new Point(), p2 = new Point(), punto = punto2;
+                    angSep = 25.0;
+
+                    p1.x = (int) (punto.x + dist * Math.cos(ang - Math.toRadians(angSep)));
+                    p1.y = (int) (punto.y - dist * Math.sin(ang - Math.toRadians(angSep)));
+                    p2.x = (int) (punto.x + dist * Math.cos(ang + Math.toRadians(angSep)));
+                    p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
+
+                    Graphics2D g2D = (Graphics2D) g;
+                    g.setColor(Color.red);
+                    g2D.setStroke(new BasicStroke(4.2f));
+                    g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
+                    g.drawLine(p1.x, p1.y, punto.x, punto.y);
+                    g.drawLine(p2.x, p2.y, punto.x, punto.y);
+
+                }
+                //int CordenadaX[] = {110, 390, 690, 115, 520, 310, 710}
+                //int CordenadaY[] = {300, 250, 290, 720, 710, 550, 550}                                
+                if (x2 == 115) {
+                    System.out.println("    x2:115");
+                    punto1 = new Point(x1, y1 + 50);
+                    punto2 = new Point(x2 + 70, 710);
+                    ty = -(punto1.y - punto2.y) * 1.0;
+                    tx = (punto1.x - punto2.x) * 1.0;
+                    ang = Math.atan(ty / tx);
+
+                    if (tx < 0) {
+                        ang += Math.PI;
+                    }
+                    Point p1 = new Point(), p2 = new Point(), punto = punto2;
+                    angSep = 25.0;
+
+                    p1.x = (int) (punto.x + dist * Math.cos(ang - Math.toRadians(angSep)));
+                    p1.y = (int) (punto.y - dist * Math.sin(ang - Math.toRadians(angSep)));
+                    p2.x = (int) (punto.x + dist * Math.cos(ang + Math.toRadians(angSep)));
+                    p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
+
+                    Graphics2D g2D = (Graphics2D) g;
+                    g.setColor(Color.red);
+                    g2D.setStroke(new BasicStroke(4.2f));
+                    g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
+                    g.drawLine(p1.x, p1.y, punto.x, punto.y);
+                    g.drawLine(p2.x, p2.y, punto.x, punto.y);
+
+                }
+                //int CordenadaX[] = {110, 390, 690, 115, 520, 310, 710}
+                //int CordenadaY[] = {300, 250, 290, 720, 710, 550, 550}                                                
+                if (x2 == 520) {
+                    System.out.println("    x2:520");
+                    punto1 = new Point(x1 + 100, y1 + 100);
+                    punto2 = new Point(x2, 710);
+                    ty = -(punto1.y - punto2.y) * 1.0;
+                    tx = (punto1.x - punto2.x) * 1.0;
+                    ang = Math.atan(ty / tx);
+
+                    if (tx < 0) {
+                        ang += Math.PI;
+                    }
+                    Point p1 = new Point(), p2 = new Point(), punto = punto2;
+                    angSep = 25.0;
+
+                    p1.x = (int) (punto.x + dist * Math.cos(ang - Math.toRadians(angSep)));
+                    p1.y = (int) (punto.y - dist * Math.sin(ang - Math.toRadians(angSep)));
+                    p2.x = (int) (punto.x + dist * Math.cos(ang + Math.toRadians(angSep)));
+                    p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
+
+                    Graphics2D g2D = (Graphics2D) g;
+                    g.setColor(Color.red);
+                    g2D.setStroke(new BasicStroke(4.2f));
+                    g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
+                    g.drawLine(p1.x, p1.y, punto.x, punto.y);
+                    g.drawLine(p2.x, p2.y, punto.x, punto.y);
+                }
+                //int CordenadaX[] = {110, 390, 690, 115, 520, 310, 710}
+                //int CordenadaY[] = {300, 250, 290, 720, 710, 550, 550}                                                
+                if (x2 == 710) {
+                    System.out.println("    x2:710");
+                    punto1 = new Point(x1 + 100, y1 + 50);
+                    punto2 = new Point(x2, y1 + 50);
+                    ty = -(punto1.y - punto2.y) * 1.0;
+                    tx = (punto1.x - punto2.x) * 1.0;
+                    ang = Math.atan(ty / tx);
+
+                    if (tx < 0) {
+                        ang += Math.PI;
+                    }
+                    Point p1 = new Point(), p2 = new Point(), punto = punto2;
+                    angSep = 25.0;
+
+                    p1.x = (int) (punto.x + dist * Math.cos(ang - Math.toRadians(angSep)));
+                    p1.y = (int) (punto.y - dist * Math.sin(ang - Math.toRadians(angSep)));
+                    p2.x = (int) (punto.x + dist * Math.cos(ang + Math.toRadians(angSep)));
+                    p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
+
+                    Graphics2D g2D = (Graphics2D) g;
+                    g.setColor(Color.red);
+                    g2D.setStroke(new BasicStroke(4.2f));
+                    g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
+                    g.drawLine(p1.x, p1.y, punto.x, punto.y);
+                    g.drawLine(p2.x, p2.y, punto.x, punto.y);
+                }
+                break;
+            case 710:
+                //int CordenadaX[] = {110, 390, 690, 115, 520, 310, 710}
+                //int CordenadaY[] = {300, 250, 290, 720, 710, 550, 550}
+                System.out.println("        x1:710");
+                if (x2 == 110) {
+                    System.out.println("    x2:110");
+                    punto1 = new Point(x1, y1);
+                    punto2 = new Point(x2 + 100, 400);
+                    ty = -(punto1.y - punto2.y) * 1.0;
+                    tx = (punto1.x - punto2.x) * 1.0;
+                    ang = Math.atan(ty / tx);
+
+                    if (tx < 0) {
+                        ang += Math.PI;
+                    }
+                    Point p1 = new Point(), p2 = new Point(), punto = punto2;
+                    angSep = 25.0;
+
+                    p1.x = (int) (punto.x + dist * Math.cos(ang - Math.toRadians(angSep)));
+                    p1.y = (int) (punto.y - dist * Math.sin(ang - Math.toRadians(angSep)));
+                    p2.x = (int) (punto.x + dist * Math.cos(ang + Math.toRadians(angSep)));
+                    p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
+
+                    Graphics2D g2D = (Graphics2D) g;
+                    g.setColor(Color.red);
+                    g2D.setStroke(new BasicStroke(4.2f));
+                    g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
+                    g.drawLine(p1.x, p1.y, punto.x, punto.y);
+                    g.drawLine(p2.x, p2.y, punto.x, punto.y);
+                }
+                if (x2 == 390) {
+                    //int CordenadaX[] = {110, 390, 690, 115, 520, 310, 710}
+                    //int CordenadaY[] = {300, 250, 290, 720, 710, 550, 550}
+                    System.out.println("    x2:390");
+                    punto1 = new Point(x1 + 10, y1);
+                    punto2 = new Point(x2 + 90, 350);
+                    ty = -(punto1.y - punto2.y) * 1.0;
+                    tx = (punto1.x - punto2.x) * 1.0;
+                    ang = Math.atan(ty / tx);
+
+                    if (tx < 0) {
+                        ang += Math.PI;
+                    }
+                    Point p1 = new Point(), p2 = new Point(), punto = punto2;
+                    angSep = 25.0;
+
+                    p1.x = (int) (punto.x + dist * Math.cos(ang - Math.toRadians(angSep)));
+                    p1.y = (int) (punto.y - dist * Math.sin(ang - Math.toRadians(angSep)));
+                    p2.x = (int) (punto.x + dist * Math.cos(ang + Math.toRadians(angSep)));
+                    p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
+
+                    Graphics2D g2D = (Graphics2D) g;
+                    g.setColor(Color.red);
+                    g2D.setStroke(new BasicStroke(4.2f));
+                    g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
+                    g.drawLine(p1.x, p1.y, punto.x, punto.y);
+                    g.drawLine(p2.x, p2.y, punto.x, punto.y);
+
+                }
+                if (x2 == 690) {
+                    //int CordenadaX[] = {110, 390, 690, 115, 520, 310, 710}
+                    //int CordenadaY[] = {300, 250, 290, 720, 710, 550, 550}
+                    System.out.println("    x2:690");
+                    punto1 = new Point(x1 + 50, y1);
+                    punto2 = new Point(x1 + 50, 390);
+                    ty = -(punto1.y - punto2.y) * 1.0;
+                    tx = (punto1.x - punto2.x) * 1.0;
+                    ang = Math.atan(ty / tx);
+
+                    if (tx < 0) {
+                        ang += Math.PI;
+                    }
+                    Point p1 = new Point(), p2 = new Point(), punto = punto2;
+                    angSep = 25.0;
+
+                    p1.x = (int) (punto.x + dist * Math.cos(ang - Math.toRadians(angSep)));
+                    p1.y = (int) (punto.y - dist * Math.sin(ang - Math.toRadians(angSep)));
+                    p2.x = (int) (punto.x + dist * Math.cos(ang + Math.toRadians(angSep)));
+                    p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
+
+                    Graphics2D g2D = (Graphics2D) g;
+                    g.setColor(Color.red);
+                    g2D.setStroke(new BasicStroke(4.2f));
+                    g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
+                    g.drawLine(p1.x, p1.y, punto.x, punto.y);
+                    g.drawLine(p2.x, p2.y, punto.x, punto.y);
+                }
+
+                if (x2 == 115) {
+                    //int CordenadaX[] = {110, 390, 690, 115, 520, 310, 710}
+                    //int CordenadaY[] = {300, 250, 290, 720, 710, 550, 550}
+                    System.out.println("    x2:115");
+                    punto1 = new Point(x1, y1 + 90);
+                    punto2 = new Point(x2 + 100, 740);
+                    ty = -(punto1.y - punto2.y) * 1.0;
+                    tx = (punto1.x - punto2.x) * 1.0;
+                    ang = Math.atan(ty / tx);
+
+                    if (tx < 0) {
+                        ang += Math.PI;
+                    }
+                    Point p1 = new Point(), p2 = new Point(), punto = punto2;
+                    angSep = 25.0;
+
+                    p1.x = (int) (punto.x + dist * Math.cos(ang - Math.toRadians(angSep)));
+                    p1.y = (int) (punto.y - dist * Math.sin(ang - Math.toRadians(angSep)));
+                    p2.x = (int) (punto.x + dist * Math.cos(ang + Math.toRadians(angSep)));
+                    p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
+
+                    Graphics2D g2D = (Graphics2D) g;
+                    g.setColor(Color.red);
+                    g2D.setStroke(new BasicStroke(4.2f));
+                    g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
+                    g.drawLine(p1.x, p1.y, punto.x, punto.y);
+                    g.drawLine(p2.x, p2.y, punto.x, punto.y);
+                }
+                if (x2 == 520) {
+                    //int CordenadaX[] = {110, 390, 690, 115, 520, 310, 710}
+                    //int CordenadaY[] = {300, 250, 290, 720, 710, 550, 550}
+                    System.out.println("    x2:520");
+                    punto1 = new Point(x1 + 50, y1 + 100);
+                    punto2 = new Point(x2 + 100, 760);
+                    ty = -(punto1.y - punto2.y) * 1.0;
+                    tx = (punto1.x - punto2.x) * 1.0;
+                    ang = Math.atan(ty / tx);
+
+                    if (tx < 0) {
+                        ang += Math.PI;
+                    }
+                    Point p1 = new Point(), p2 = new Point(), punto = punto2;
+                    angSep = 25.0;
+
+                    p1.x = (int) (punto.x + dist * Math.cos(ang - Math.toRadians(angSep)));
+                    p1.y = (int) (punto.y - dist * Math.sin(ang - Math.toRadians(angSep)));
+                    p2.x = (int) (punto.x + dist * Math.cos(ang + Math.toRadians(angSep)));
+                    p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
+
+                    Graphics2D g2D = (Graphics2D) g;
+                    g.setColor(Color.red);
+                    g2D.setStroke(new BasicStroke(4.2f));
+                    g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
+                    g.drawLine(p1.x, p1.y, punto.x, punto.y);
+                    g.drawLine(p2.x, p2.y, punto.x, punto.y);
+                }
+
+                if (x2 == 310) {
+                    //int CordenadaX[] = {110, 390, 690, 115, 520, 310, 710}
+                    //int CordenadaY[] = {300, 250, 290, 720, 710, 550, 550}
+                    System.out.println("    x2:310");
+                    punto1 = new Point(x1 + 20, y1 + 50);
+                    punto2 = new Point(x2 + 100, y1 + 50);
+                    ty = -(punto1.y - punto2.y) * 1.0;
+                    tx = (punto1.x - punto2.x) * 1.0;
+                    ang = Math.atan(ty / tx);
+
+                    if (tx < 0) {
+                        ang += Math.PI;
+                    }
+                    Point p1 = new Point(), p2 = new Point(), punto = punto2;
+                    angSep = 25.0;
+
+                    p1.x = (int) (punto.x + dist * Math.cos(ang - Math.toRadians(angSep)));
+                    p1.y = (int) (punto.y - dist * Math.sin(ang - Math.toRadians(angSep)));
+                    p2.x = (int) (punto.x + dist * Math.cos(ang + Math.toRadians(angSep)));
+                    p2.y = (int) (punto.y - dist * Math.sin(ang + Math.toRadians(angSep)));
+
+                    Graphics2D g2D = (Graphics2D) g;
+                    g.setColor(Color.red);
+                    g2D.setStroke(new BasicStroke(4.2f));
+                    g.drawLine(punto1.x, punto1.y, punto.x, punto.y);
+                    g.drawLine(p1.x, p1.y, punto.x, punto.y);
+                    g.drawLine(p2.x, p2.y, punto.x, punto.y);
+                }
+                break;
+        }
+    }
+
     private void btn_generarInformeMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn_generarInformeMouseClicked
-        
+
     }//GEN-LAST:event_btn_generarInformeMouseClicked
 
     /**
@@ -2489,4 +3822,7 @@ public class UPS extends javax.swing.JFrame {
     private javax.swing.JSpinner sp_distancia;
     private javax.swing.JSpinner sp_distancia2;
     // End of variables declaration//GEN-END:variables
+
+
+
 }
